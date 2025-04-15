@@ -5,16 +5,28 @@ uses
 
 type
   Lexeme = record
-    TokenType: token;
+    TokenType: TokenT;
     token: string;
     line_lex: integer;
     column_lex: integer;
+  end;
   
-
 var
-  token: TokenType;  
+  lex: Lexeme;  
+  f: Text;
+  line: string;
+  
 begin
-  token:= TT_ADD;
-  writeln('Token ordinal: ', Ord(token));
+  Assign(f,'input.txt');
+  Reset(f);
+
+  while not Eof(f) do
+    begin
+      Readln(f, line);
+      writeln('Line read: ', line);
+    end;
+  
+  lex.TokenType:= TT_SUB;
+  writeln('Token ordinal: ', Ord(lex.TokenType));
   
 end.

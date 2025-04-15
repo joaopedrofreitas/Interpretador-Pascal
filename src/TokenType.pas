@@ -1,9 +1,9 @@
-unit tokens;
+unit TOKENTYPE;
 
 interface
 
 type
-  TokenType = (
+  TokenT = (
     TT_END_OF_FILE,
     TT_ADD, TT_SUB, TT_MUL, TT_DIV, TT_MOD, TT_DIVINT,
     TT_OR, TT_AND, TT_NOT,
