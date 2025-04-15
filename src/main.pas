@@ -1,32 +1,26 @@
 program Interpreter;
 
 uses
-  crt, TokenType;
-
-type
-  Lexeme = record
-    TokenType: TokenT;
-    token: string;
-    line_lex: integer;
-    column_lex: integer;
-  end;
+  crt,lexer;
   
 var
   lex: Lexeme;  
   f: Text;
   line: string;
+  filename: string;
   
 begin
-  Assign(f,'input.txt');
+  
+  if ParamCount < 1 then
+    begin
+      writeln('Usage: ', ParamStr(0), ' <filename>');
+      Halt(1);
+  end;
+
+  filename := ParamStr(1);
+  
+  Assign(f,filename);
   Reset(f);
 
-  while not Eof(f) do
-    begin
-      Readln(f, line);
-      writeln('Line read: ', line);
-    end;
-  
-  lex.TokenType:= TT_SUB;
-  writeln('Token ordinal: ', Ord(lex.TokenType));
-  
+   
 end.
