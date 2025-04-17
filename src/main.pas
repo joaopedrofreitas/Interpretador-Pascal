@@ -1,7 +1,7 @@
 program Interpreter;
 
 uses
-  crt,lexer;
+  crt,LEXER;
   
 var
   lex: Lexeme;  

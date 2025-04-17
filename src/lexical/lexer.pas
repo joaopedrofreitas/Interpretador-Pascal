@@ -3,7 +3,7 @@ unit LEXER;
 interface
 
 uses
-  TokenType;
+  TOKENTYPE;
 
 type
   Lexeme = record
