@@ -1,10 +1,12 @@
-unit TOKENTYPE;
+unit TokenType;
 
 interface
 
 type
   TokenT = (
     // Special
+    TT_UNEXPECTED_EOF = -2,
+    TT_INVALID_TOKEN  = -1,
     TT_END_OF_FILE,
 
     // Arithmetic operators
@@ -64,86 +66,79 @@ type
     TT_LITERAL_DECIMAL,
     TT_LITERAL_HEX,
     TT_LITERAL_REAL,
-    TT_LITERAL_STRING,
+    TT_LITERAL_STRING
   );
 
-const
-  // Specials
-  TT_UNEXPECTED_EOF = -2;
-  TT_INVALID_TOKEN  = -1;
-
-function tt2str(type: TokenT): string;
+function tt2str(token: TokenT): string;
 
 implementation
 
-uses SysUtils;
-
-function tt2str(type: TokenT): string;
+function tt2str(token: TokenT): string;
 begin
-  case type of
+  case token of
     // Specials
-    TT_UNEXPECTED_EOF:    Result := 'UNEXPECTED_EOF';
-    TT_INVALID_TOKEN:     Result := 'INVALID_TOKEN';
-    TT_END_OF_FILE:       Result := 'END_OF_FILE';
+    TT_UNEXPECTED_EOF:    tt2str := 'UNEXPECTED_EOF';
+    TT_INVALID_TOKEN:     tt2str := 'INVALID_TOKEN';
+    TT_END_OF_FILE:       tt2str := 'END_OF_FILE';
 
     // Arithmetic operators
-    TT_ADD:               Result := 'ADD';
-    TT_SUB:               Result := 'SUB';
-    TT_MUL:               Result := 'MUL';
-    TT_DIV:               Result := 'DIV';
-    TT_MOD:               Result := 'MOD';
-    TT_DIVINT:            Result := 'DIVINT';
+    TT_ADD:               tt2str := 'ADD';
+    TT_SUB:               tt2str := 'SUB';
+    TT_MUL:               tt2str := 'MUL';
+    TT_DIV:               tt2str := 'DIV';
+    TT_MOD:               tt2str := 'MOD';
+    TT_DIVINT:            tt2str := 'DIVINT';
 
     // Logical, relational operators and assignments
-    TT_OR:                Result := 'OR';
-    TT_AND:               Result := 'AND';
-    TT_NOT:               Result := 'NOT';
-    TT_EQUAL:             Result := 'EQUAL';
-    TT_DIFFERENCE:        Result := 'DIFFERENCE';
-    TT_GREATER:           Result := 'GREATER';
-    TT_GREATER_EQUAL:     Result := 'GREATER_EQUAL';
-    TT_LOWER:             Result := 'LOWER';
-    TT_LOWER_EQUAL:       Result := 'LOWER_EQUAL';
-    TT_ASSIGN:            Result := 'ASSIGN';
+    TT_OR:                tt2str := 'OR';
+    TT_AND:               tt2str := 'AND';
+    TT_NOT:               tt2str := 'NOT';
+    TT_EQUAL:             tt2str := 'EQUAL';
+    TT_DIFFERENCE:        tt2str := 'DIFFERENCE';
+    TT_GREATER:           tt2str := 'GREATER';
+    TT_GREATER_EQUAL:     tt2str := 'GREATER_EQUAL';
+    TT_LOWER:             tt2str := 'LOWER';
+    TT_LOWER_EQUAL:       tt2str := 'LOWER_EQUAL';
+    TT_ASSIGN:            tt2str := 'ASSIGN';
 
     // Symbols
-    TT_SEMICOLON:         Result := 'SEMICOLON';
-    TT_COMMA:             Result := 'COMMA';
-    TT_PERIOD:            Result := 'PERIOD';
-    TT_COLON:             Result := 'COLON';
-    TT_OPEN_PARENTHESES:  Result := 'OPEN_PARENTHESES';
-    TT_CLOSE_PARENTHESES: Result := 'CLOSE_PARENTHESES';
-    TT_QUOTES:            Result := 'QUOTES';
+    TT_SEMICOLON:         tt2str := 'SEMICOLON';
+    TT_COMMA:             tt2str := 'COMMA';
+    TT_PERIOD:            tt2str := 'PERIOD';
+    TT_COLON:             tt2str := 'COLON';
+    TT_OPEN_PARENTHESES:  tt2str := 'OPEN_PARENTHESES';
+    TT_CLOSE_PARENTHESES: tt2str := 'CLOSE_PARENTHESES';
+    TT_QUOTES:            tt2str := 'QUOTES';
 
     // Keywords
-    TT_PROGRAM:           Result := 'PROGRAM';
-    TT_VAR:               Result := 'VAR';
-    TT_TYPE_INTEGER:      Result := 'TYPE_INTEGER';
-    TT_TYPE_REAL:         Result := 'TYPE_REAL';
-    TT_TYPE_STRING:       Result := 'TYPE_STRING';
-    TT_BEGIN:             Result := 'BEGIN';
-    TT_END:               Result := 'END';
-    TT_FOR:               Result := 'FOR';
-    TT_TO:                Result := 'TO';
-    TT_WHILE:             Result := 'WHILE';
-    TT_DO:                Result := 'DO';
-    TT_BREAK:             Result := 'BREAK';
-    TT_CONTINUE:          Result := 'CONTINUE';
-    TT_IF:                Result := 'IF';
-    TT_ELSE:              Result := 'ELSE';
-    TT_THEN:              Result := 'THEN';
-    TT_WRITE:             Result := 'WRITE';
-    TT_WRITELN:           Result := 'WRITELN';
-    TT_READ:              Result := 'READ';
-    TT_READLN:            Result := 'READLN';
+    TT_PROGRAM:           tt2str := 'PROGRAM';
+    TT_VAR:               tt2str := 'VAR';
+    TT_TYPE_INTEGER:      tt2str := 'TYPE_INTEGER';
+    TT_TYPE_REAL:         tt2str := 'TYPE_REAL';
+    TT_TYPE_STRING:       tt2str := 'TYPE_STRING';
+    TT_BEGIN:             tt2str := 'BEGIN';
+    TT_END:               tt2str := 'END';
+    TT_FOR:               tt2str := 'FOR';
+    TT_TO:                tt2str := 'TO';
+    TT_WHILE:             tt2str := 'WHILE';
+    TT_DO:                tt2str := 'DO';
+    TT_BREAK:             tt2str := 'BREAK';
+    TT_CONTINUE:          tt2str := 'CONTINUE';
+    TT_IF:                tt2str := 'IF';
+    TT_ELSE:              tt2str := 'ELSE';
+    TT_THEN:              tt2str := 'THEN';
+    TT_WRITE:             tt2str := 'WRITE';
+    TT_WRITELN:           tt2str := 'WRITELN';
+    TT_READ:              tt2str := 'READ';
+    TT_READLN:            tt2str := 'READLN';
 
     // Others
-    TT_VAR_NAME:          Result := 'VAR_NAME';
-    TT_LITERAL_OCTAL:     Result := 'LITERAL_OCTAL';
-    TT_LITERAL_DECIMAL:   Result := 'LITERAL_DECIMAL';
-    TT_LITERAL_HEX:       Result := 'LITERAL_HEX';
-    TT_LITERAL_REAL:      Result := 'LITERAL_REAL';
-    TT_LITERAL_STRING:    Result := 'LITERAL_STRING';
+    TT_VAR_NAME:          tt2str := 'VAR_NAME';
+    TT_LITERAL_OCTAL:     tt2str := 'LITERAL_OCTAL';
+    TT_LITERAL_DECIMAL:   tt2str := 'LITERAL_DECIMAL';
+    TT_LITERAL_HEX:       tt2str := 'LITERAL_HEX';
+    TT_LITERAL_REAL:      tt2str := 'LITERAL_REAL';
+    TT_LITERAL_STRING:    tt2str := 'LITERAL_STRING';
 
   else
     // É preciso implementar para caso ache um token invalido

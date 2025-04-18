@@ -1,18 +1,11 @@
-unit LEXER;
+unit Lexer;
 
 interface
 
 uses
-  TOKENTYPE;
+  TokenType, LexemeUnit;
 
 type
-  Lexeme = record
-    TokenType: TokenT;
-    token: string;
-    line_lex: integer;
-    column_lex: integer;
-  end;
-
   AFD_State = (
     STATE_INITIAL,
     STATE_SLASH,
@@ -45,8 +38,8 @@ procedure newLine(var lexeme: Lexeme);
 begin
   Inc(f_line);
   f_column := 0;
-  lexeme.line_lex := f_line;
-  lexeme.column_lex := f_column + 1;
+  lexeme.line := f_line;
+  lexeme.column := f_column + 1;
 end;
 
 procedure ungetChar(c: char; var f: Text);
@@ -59,12 +52,14 @@ end;
 function nextToken(var f:Text): Lexeme;
   var 
     c: char;
+    lexeme: Lexeme;
   begin
     state := STATE_INITIAL;
     
-    lexeme.line_lex := f_line;
-    lexeme.column_lex := f_column;
-
+    lexeme := Lexeme.Create;
+    lexeme.line := f_line;
+    lexeme.column := f_column;
+  end;
     
 
 end.
