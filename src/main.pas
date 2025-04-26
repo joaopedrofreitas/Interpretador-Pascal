@@ -4,7 +4,7 @@ program Main;
 
 uses
     SysUtils,
-    Lexer;  // Unit where TLexer is declared
+    Lexer;  
 
 var
     lexemes: TArray<TLexeme>;
@@ -20,20 +20,20 @@ begin
     end;
 
     try
-        // Create lexer and scan file
-        with TLexer.Create do
+    lexer := TLexer.Create;
         try
-            lexemes := ScanFile(ParamStr(1));
+            lexemes := lexer.ScanFile(ParamStr(1));
 
             // Print each lexeme's token
             for i := 0 to High(lexemes) do
             begin
-                lex := lexemes[i];
-                WriteLn('Token: ', lex.Token);
+              lex := lexemes[i];
+              WriteLn('Token: ', lex.str());
             end;
-        finally
-            Free;
-        end;
+          finally
+            lexer.Free;
+        end;        
+    
     except
         on E: ELexicalError do
             WriteLn('Error: ', E.Message);
