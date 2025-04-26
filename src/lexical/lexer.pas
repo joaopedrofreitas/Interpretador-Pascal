@@ -25,6 +25,7 @@ type
     STATE_FINAL
   );
 
+
 function nextToken(var f:Text): Lexeme;
 
 implementation
