@@ -1,26 +1,43 @@
-program Interpreter;
+program Main;
+
+{$mode objfpc}{$H+}
 
 uses
-  crt, Lexer, LexemeUnit;
-  
+    SysUtils,
+    Lexer;  // Unit where TLexer is declared
+
 var
-  lex: Lexeme;  
-  f: Text;
-  line: string;
-  filename: string;
-  
+    lexemes: TArray<TLexeme>;
+    i: Integer;
+    lex: TLexeme;
+
 begin
-  
-  if ParamCount < 1 then
+    // Check command-line arguments
+    if ParamCount <> 1 then
     begin
-      writeln('Usage: ', ParamStr(0), ' <filename>');
-      Halt(1);
-  end;
+        WriteLn('Usage: ', ExtractFileName(ParamStr(0)), ' <program>');
+        Halt(1);
+    end;
 
-  filename := ParamStr(1);
-  
-  Assign(f,filename);
-  Reset(f);
+    try
+        // Create lexer and scan file
+        with TLexer.Create do
+        try
+            lexemes := ScanFile(ParamStr(1));
 
-   
+            // Print each lexeme's token
+            for i := 0 to High(lexemes) do
+            begin
+                lex := lexemes[i];
+                WriteLn('Token: ', lex.Token);
+            end;
+        finally
+            Free;
+        end;
+    except
+        on E: ELexicalError do
+            WriteLn('Error: ', E.Message);
+        on E: Exception do
+            WriteLn('Error: ', E.ClassName, ': ', E.Message);
+    end;
 end.
