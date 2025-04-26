@@ -7,7 +7,7 @@ interface
 uses TokenType, SysUtils;
 
 type
-  Lexeme = class
+  TLexeme = class
   public
     TokenType: TokenT;
     token: string;
@@ -19,7 +19,7 @@ type
 
 implementation
 
-constructor Lexeme.Create;
+constructor TLexeme.Create;
 begin
   token := '';
   TokenType := TT_END_OF_FILE;
@@ -27,7 +27,7 @@ begin
   column := 0;
 end;
 
-function Lexeme.str: string;
+function TLexeme.str: string;
 begin
   Result := '(' + IntToStr(line) + ', ' + IntToStr(column) 
     + ', "' + token + '", ' + tt2str(TokenType) + ')';
