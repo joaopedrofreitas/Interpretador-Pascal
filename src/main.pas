@@ -20,7 +20,7 @@ begin
     end;
 
     try
-    lexer := TLexer.Create;
+    lexer := TLexer.Create();
         try
             lexemes := lexer.ScanFile(ParamStr(1));
 
@@ -31,7 +31,7 @@ begin
               WriteLn('Token: ', lex.str());
             end;
           finally
-            lexer.Free;
+            lexer.Free();
         end;        
     
     except

@@ -142,6 +142,7 @@ begin
 
   else
     // É preciso implementar para caso ache um token invalido
+    writeln("Invalid token type");
     halt(1);
   end;
 end;
