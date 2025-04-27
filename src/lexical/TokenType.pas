@@ -4,63 +4,63 @@ interface
 
 type
   TokenT = (
-    // Special
+    { Special }
     TT_UNEXPECTED_EOF = -2,
     TT_INVALID_TOKEN  = -1,
     TT_END_OF_FILE,
 
-    // Arithmetic operators
-    TT_ADD,                // +
-    TT_SUB,                // -
-    TT_MUL,                // *
-    TT_DIV,                // /
-    TT_MOD,                // mod
-    TT_DIVINT,             // div
+    { Arithmetic operators }
+    TT_ADD,                { + }
+    TT_SUB,                { - }
+    TT_MUL,                { * }
+    TT_DIV,                { / }
+    TT_MOD,                { mod }
+    TT_DIVINT,             { div }
 
-    // Logical, relational operators and assignments
-    TT_OR,                 // or
-    TT_AND,                // and
-    TT_NOT,                // not
-    TT_EQUAL,              // ==
-    TT_DIFFERENCE,         // <>
-    TT_GREATER,            // >
-    TT_GREATER_EQUAL,      // >=
-    TT_LOWER,              // <
-    TT_LOWER_EQUAL,        // <=
-    TT_ASSIGN,             // :=
+    { Logical, relational operators and assignments }
+    TT_OR,                 { or }
+    TT_AND,                { and }
+    TT_NOT,                { not }
+    TT_EQUAL,              { == }
+    TT_DIFFERENCE,         { <> }
+    TT_GREATER,            { > }
+    TT_GREATER_EQUAL,      { >= }
+    TT_LOWER,              { < }
+    TT_LOWER_EQUAL,        { <= }
+    TT_ASSIGN,             { := }
 
-    // Keywords
-    TT_PROGRAM,            // program
-    TT_VAR,                // var
-    TT_TYPE_INTEGER,       // integer
-    TT_TYPE_REAL,          // real
-    TT_TYPE_STRING,        // string
-    TT_BEGIN,              // begin
-    TT_END,                // end
-    TT_FOR,                // for
-    TT_TO,                 // to
-    TT_WHILE,              // while
-    TT_DO,                 // do
-    TT_BREAK,              // break
-    TT_CONTINUE,           // continue
-    TT_IF,                 // if
-    TT_ELSE,               // else
-    TT_THEN,               // then
-    TT_WRITE,              // write
-    TT_WRITELN,            // writeln
-    TT_READ,               // read
-    TT_READLN,             // readln
+    { Keywords }
+    TT_PROGRAM,            { program }
+    TT_VAR,                { var }
+    TT_TYPE_INTEGER,       { integer }
+    TT_TYPE_REAL,          { real }
+    TT_TYPE_STRING,        { string }
+    TT_BEGIN,              { begin }
+    TT_END,                { end }
+    TT_FOR,                { for }
+    TT_TO,                 { to }
+    TT_WHILE,              { while }
+    TT_DO,                 { do }
+    TT_BREAK,              { break }
+    TT_CONTINUE,           { continue }
+    TT_IF,                 { if }
+    TT_ELSE,               { else }
+    TT_THEN,               { then }
+    TT_WRITE,              { write }
+    TT_WRITELN,            { writeln }
+    TT_READ,               { read }
+    TT_READLN,             { readln }
 
-    // Symbols
-    TT_SEMICOLON,          // ;
-    TT_COMMA,              // ,
-    TT_PERIOD,             // .
-    TT_COLON,              // :
-    TT_OPEN_PARENTHESES,   // (
-    TT_CLOSE_PARENTHESES,  // )
-    TT_QUOTES,             // "
+    { Symbols }
+    TT_SEMICOLON,          { ; }
+    TT_COMMA,              { , }
+    TT_PERIOD,             { . }
+    TT_COLON,              { : }
+    TT_OPEN_PARENTHESES,   { ( }
+    TT_CLOSE_PARENTHESES,  { ) }
+    TT_QUOTES,             { " }
 
-    // Others
+    { Others }
     TT_VAR_NAME,
     TT_LITERAL_OCTAL,
     TT_LITERAL_DECIMAL,
@@ -76,12 +76,12 @@ implementation
 function tt2str(token: TokenT): string;
 begin
   case token of
-    // Specials
+    { Specials }
     TT_UNEXPECTED_EOF:    tt2str := 'UNEXPECTED_EOF';
     TT_INVALID_TOKEN:     tt2str := 'INVALID_TOKEN';
     TT_END_OF_FILE:       tt2str := 'END_OF_FILE';
 
-    // Arithmetic operators
+    { Arithmetic operators }
     TT_ADD:               tt2str := 'ADD';
     TT_SUB:               tt2str := 'SUB';
     TT_MUL:               tt2str := 'MUL';
@@ -89,7 +89,7 @@ begin
     TT_MOD:               tt2str := 'MOD';
     TT_DIVINT:            tt2str := 'DIVINT';
 
-    // Logical, relational operators and assignments
+    { Logical, relational operators and assignments }
     TT_OR:                tt2str := 'OR';
     TT_AND:               tt2str := 'AND';
     TT_NOT:               tt2str := 'NOT';
@@ -101,7 +101,7 @@ begin
     TT_LOWER_EQUAL:       tt2str := 'LOWER_EQUAL';
     TT_ASSIGN:            tt2str := 'ASSIGN';
 
-    // Symbols
+    { Symbols }
     TT_SEMICOLON:         tt2str := 'SEMICOLON';
     TT_COMMA:             tt2str := 'COMMA';
     TT_PERIOD:            tt2str := 'PERIOD';
@@ -110,7 +110,7 @@ begin
     TT_CLOSE_PARENTHESES: tt2str := 'CLOSE_PARENTHESES';
     TT_QUOTES:            tt2str := 'QUOTES';
 
-    // Keywords
+    { Keywords }
     TT_PROGRAM:           tt2str := 'PROGRAM';
     TT_VAR:               tt2str := 'VAR';
     TT_TYPE_INTEGER:      tt2str := 'TYPE_INTEGER';
@@ -132,7 +132,7 @@ begin
     TT_READ:              tt2str := 'READ';
     TT_READLN:            tt2str := 'READLN';
 
-    // Others
+    { Others }
     TT_VAR_NAME:          tt2str := 'VAR_NAME';
     TT_LITERAL_OCTAL:     tt2str := 'LITERAL_OCTAL';
     TT_LITERAL_DECIMAL:   tt2str := 'LITERAL_DECIMAL';
@@ -141,10 +141,11 @@ begin
     TT_LITERAL_STRING:    tt2str := 'LITERAL_STRING';
 
   else
-    // É preciso implementar para caso ache um token invalido
-    writeln("Invalid token type");
+    { É preciso implementar para caso ache um token inválido }
+    writeln('Invalid token type');
     halt(1);
   end;
 end;
 
 end.
+
