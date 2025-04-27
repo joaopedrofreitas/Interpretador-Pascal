@@ -140,8 +140,9 @@ begin
     TT_LITERAL_REAL:      tt2str := 'LITERAL_REAL';
     TT_LITERAL_STRING:    tt2str := 'LITERAL_STRING';
 
-  else 
-    writeln('Invalid token type');
+  else
+    writeln('Error: Invalid token type');
+    halt(1);
   end;
 end;
 
