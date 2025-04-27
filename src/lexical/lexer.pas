@@ -364,6 +364,7 @@ begin
       STATE_SLASH: begin
         if C = '/' then
           begin
+            L.token := '';
             C := LexerFile.Advance;
             State := STATE_COMMENT_SINGLE_LINE;
           end
