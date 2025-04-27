@@ -433,7 +433,12 @@ begin
       end;
 
       STATE_EQUAL: begin
-        L.TokenType := SymbolUnit.Find(L.token);
+        if C = '=' then
+          begin
+            L.token := L.token + C;
+            C := LexerFile.Advance;
+          end;
+        L.TokenType := TT_EQUAL;
         State := STATE_FINAL;
       end;
 
