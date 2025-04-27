@@ -13,85 +13,128 @@ function Find(const Token: string): TokenT;
 
 implementation
 
+const
+  TableSize = 101; // a prime number bigger than the number of keywords, to reduce collisions
+
 type
-  TSymbolEntry = record
-    Name: string;
-    Kind: TokenT;
+  PHashEntry = ^THashEntry;
+  THashEntry = record
+    Key: string;
+    Value: TokenT;
   end;
 
-const
-  SymbolEntries: array[0..42] of TSymbolEntry = (
-    { Arithmetic operators }
-    (Name: '+';        Kind: TT_ADD),
-    (Name: '-';        Kind: TT_SUB),
-    (Name: '*';        Kind: TT_MUL),
-    (Name: '/';        Kind: TT_DIV),
-    (Name: 'mod';      Kind: TT_MOD),
-    (Name: 'div';      Kind: TT_DIVINT),
+var
+  HashTable: array[0..TableSize - 1] of PHashEntry;
+  cleanupIndex: Integer; 
 
-    { Logical, relational operators and assignments }
-    (Name: 'or';       Kind: TT_OR),
-    (Name: 'and';      Kind: TT_AND),
-    (Name: 'not';      Kind: TT_NOT),
-    (Name: '==';       Kind: TT_EQUAL),
-    (Name: '<>';       Kind: TT_DIFFERENCE),
-    (Name: '>';        Kind: TT_GREATER),
-    (Name: '>=';       Kind: TT_GREATER_EQUAL),
-    (Name: '<';        Kind: TT_LOWER),
-    (Name: '<=';       Kind: TT_LOWER_EQUAL),
-    (Name: ':=';       Kind: TT_ASSIGN),
-
-    { Symbols }
-    (Name: ';';        Kind: TT_SEMICOLON),
-    (Name: ',';        Kind: TT_COMMA),
-    (Name: '.';        Kind: TT_PERIOD),
-    (Name: ':';        Kind: TT_COLON),
-    (Name: '(';        Kind: TT_OPEN_PARENTHESES),
-    (Name: ')';        Kind: TT_CLOSE_PARENTHESES),
-    (Name: '"';        Kind: TT_QUOTES),
-
-    { Keywords }
-    (Name: 'program';  Kind: TT_PROGRAM),
-    (Name: 'var';      Kind: TT_VAR),
-    (Name: 'integer';  Kind: TT_TYPE_INTEGER),
-    (Name: 'real';     Kind: TT_TYPE_REAL),
-    (Name: 'string';   Kind: TT_TYPE_STRING),
-    (Name: 'begin';    Kind: TT_BEGIN),
-    (Name: 'end';      Kind: TT_END),
-    (Name: 'for';      Kind: TT_FOR),
-    (Name: 'to';       Kind: TT_TO),
-    (Name: 'while';    Kind: TT_WHILE),
-    (Name: 'do';       Kind: TT_DO),
-    (Name: 'break';    Kind: TT_BREAK),
-    (Name: 'continue'; Kind: TT_CONTINUE),
-    (Name: 'if';       Kind: TT_IF),
-    (Name: 'else';     Kind: TT_ELSE),
-    (Name: 'then';     Kind: TT_THEN),
-    (Name: 'write';    Kind: TT_WRITE),
-    (Name: 'writeln';  Kind: TT_WRITELN),
-    (Name: 'read';     Kind: TT_READ),
-    (Name: 'readln';   Kind: TT_READLN)
-  );
-
-function Contains(const Token: string): Boolean;
+function SimpleHash(const S: string): Integer;
 var
   i: Integer;
 begin
-  for i := Low(SymbolEntries) to High(SymbolEntries) do
-    if CompareText(Token, SymbolEntries[i].Name) = 0 then
+  Result := 0;
+  for i := 1 to Length(S) do
+    Result := (Result * 31 + Ord(UpCase(S[i]))) mod TableSize;
+end;
+
+procedure Insert(const Key: string; Value: TokenT);
+var
+  Index: Integer;
+begin
+  Index := SimpleHash(Key);
+  while Assigned(HashTable[Index]) do
+    Index := (Index + 1) mod TableSize; 
+  New(HashTable[Index]);
+  HashTable[Index]^.Key := Key;
+  HashTable[Index]^.Value := Value;
+end;
+
+function Contains(const Token: string): Boolean;
+var
+  Index, StartIndex: Integer;
+begin
+  Index := SimpleHash(Token);
+  StartIndex := Index;
+  while Assigned(HashTable[Index]) do
+  begin
+    if CompareText(HashTable[Index]^.Key, Token) = 0 then
       Exit(True);
+    Index := (Index + 1) mod TableSize;
+    if Index = StartIndex then
+      Break;
+  end;
   Result := False;
 end;
 
 function Find(const Token: string): TokenT;
 var
-  i: Integer;
+  Index, StartIndex: Integer;
 begin
-  for i := Low(SymbolEntries) to High(SymbolEntries) do
-    if CompareText(Token, SymbolEntries[i].Name) = 0 then
-      Exit(SymbolEntries[i].Kind);
-  Result := TT_VAR_NAME;
+  Index := SimpleHash(Token);
+  StartIndex := Index;
+  while Assigned(HashTable[Index]) do
+  begin
+    if CompareText(HashTable[Index]^.Key, Token) = 0 then
+      Exit(HashTable[Index]^.Value);
+    Index := (Index + 1) mod TableSize;
+    if Index = StartIndex then
+      Break;
+  end;
+  Result := TT_VAR_NAME; // default if not found
 end;
 
-end.
+procedure InitTable;
+begin
+  Insert('+'      , TT_ADD);
+  Insert('-'      , TT_SUB);
+  Insert('*'      , TT_MUL);
+  Insert('/'      , TT_DIV);
+  Insert('mod'    , TT_MOD);
+  Insert('div'    , TT_DIVINT);
+  Insert('or'     , TT_OR);
+  Insert('and'    , TT_AND);
+  Insert('not'    , TT_NOT);
+  Insert('=='     , TT_EQUAL);
+  Insert('<>'     , TT_DIFFERENCE);
+  Insert('>'      , TT_GREATER);
+  Insert('>='     , TT_GREATER_EQUAL);
+  Insert('<'      , TT_LOWER);
+  Insert('<='     , TT_LOWER_EQUAL);
+  Insert(':='     , TT_ASSIGN);
+  Insert(';'      , TT_SEMICOLON);
+  Insert(','      , TT_COMMA);
+  Insert('.'      , TT_PERIOD);
+  Insert(':'      , TT_COLON);
+  Insert('('      , TT_OPEN_PARENTHESES);
+  Insert(')'      , TT_CLOSE_PARENTHESES);
+  Insert('"'      , TT_QUOTES);
+  Insert('program', TT_PROGRAM);
+  Insert('var'    , TT_VAR);
+  Insert('integer', TT_TYPE_INTEGER);
+  Insert('real'   , TT_TYPE_REAL);
+  Insert('string' , TT_TYPE_STRING);
+  Insert('begin'  , TT_BEGIN);
+  Insert('end'    , TT_END);
+  Insert('for'    , TT_FOR);
+  Insert('to'     , TT_TO);
+  Insert('while'  , TT_WHILE);
+  Insert('do'     , TT_DO);
+  Insert('break'  , TT_BREAK);
+  Insert('continue', TT_CONTINUE);
+  Insert('if'     , TT_IF);
+  Insert('else'   , TT_ELSE);
+  Insert('then'   , TT_THEN);
+  Insert('write'  , TT_WRITE);
+  Insert('writeln', TT_WRITELN);
+  Insert('read'   , TT_READ);
+  Insert('readln' , TT_READLN);
+end;
 
+initialization
+  InitTable;
+
+finalization
+  for cleanupIndex := 0 to TableSize - 1 do
+    if Assigned(HashTable[cleanupIndex]) then
+      Dispose(HashTable[cleanupIndex]);
+
+end.
