@@ -16,7 +16,7 @@ UNITS = \
 
 # Arquivo principal e executável
 MAIN = $(SRC_DIR)/main.pas
-OUTPUT = ../main  # Nome do executável sem aspas
+OUTPUT = main  # Nome do executável sem aspas
 
 # Flags de compilação
 FLAGS = -Mobjfpc -Fu$(LEX_DIR) -Fu$(UTIL_DIR)
@@ -32,3 +32,4 @@ clean:
 	find $(SRC_DIR) -name '*.o' -delete
 
 .PHONY: all compile clean
+
