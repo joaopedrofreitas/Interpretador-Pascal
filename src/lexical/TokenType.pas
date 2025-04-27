@@ -141,8 +141,7 @@ begin
     TT_LITERAL_STRING:    tt2str := 'LITERAL_STRING';
 
   else
-    { É preciso implementar para caso ache um token inválido }
-    writeln('Invalid token type');
+    writeln('Error: Invalid token type');
     halt(1);
   end;
 end;
