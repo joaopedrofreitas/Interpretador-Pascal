@@ -21,12 +21,15 @@ type
 
 const
   SymbolEntries: array[0..42] of TSymbolEntry = (
+    { Arithmetic operators }
     (Name: '+';        Kind: TT_ADD),
     (Name: '-';        Kind: TT_SUB),
     (Name: '*';        Kind: TT_MUL),
     (Name: '/';        Kind: TT_DIV),
     (Name: 'mod';      Kind: TT_MOD),
     (Name: 'div';      Kind: TT_DIVINT),
+
+    { Logical, relational operators and assignments }
     (Name: 'or';       Kind: TT_OR),
     (Name: 'and';      Kind: TT_AND),
     (Name: 'not';      Kind: TT_NOT),
@@ -37,6 +40,8 @@ const
     (Name: '<';        Kind: TT_LOWER),
     (Name: '<=';       Kind: TT_LOWER_EQUAL),
     (Name: ':=';       Kind: TT_ASSIGN),
+
+    { Symbols }
     (Name: ';';        Kind: TT_SEMICOLON),
     (Name: ',';        Kind: TT_COMMA),
     (Name: '.';        Kind: TT_PERIOD),
@@ -44,6 +49,8 @@ const
     (Name: '(';        Kind: TT_OPEN_PARENTHESES),
     (Name: ')';        Kind: TT_CLOSE_PARENTHESES),
     (Name: '"';        Kind: TT_QUOTES),
+
+    { Keywords }
     (Name: 'program';  Kind: TT_PROGRAM),
     (Name: 'var';      Kind: TT_VAR),
     (Name: 'integer';  Kind: TT_TYPE_INTEGER),

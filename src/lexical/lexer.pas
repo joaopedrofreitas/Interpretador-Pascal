@@ -129,108 +129,140 @@ begin
           L.TokenType := TT_END_OF_FILE;
           State := STATE_FINAL;
         end
+
+        { whitespaces are skipped }
         else if C <= ' ' then
           C := LexerFile.Advance
+
+        { this can be either a variable name or a keyword }
         else if IsAlpha(C) then
-          begin
-            L.token := L.token + C;
-            L.Line := LexerFile.Line;
-            L.Column := LexerFile.Column;
-            C := LexerFile.Advance;
-            State := STATE_ALNUM;
-          end
+        begin
+          L.token := L.token + C;
+          L.Line := LexerFile.Line;
+          L.Column := LexerFile.Column;
+          C := LexerFile.Advance;
+          State := STATE_ALNUM;
+        end
+
+        { this can be a octal, hexadecimal or a real number }
         else if C = '0' then
-          begin
-            L.token := L.token + C;
-            L.Line := LexerFile.Line;
-            L.Column := LexerFile.Column;
-            C := LexerFile.Advance;
-            State := STATE_ZERO;
-          end
+        begin
+          L.token := L.token + C;
+          L.Line := LexerFile.Line;
+          L.Column := LexerFile.Column;
+          C := LexerFile.Advance;
+          State := STATE_ZERO;
+        end
+
+        { this can be either a decimal or real number }
         else if IsDigit(C) then
-          begin
-            L.token := L.token + C;
-            L.Line := LexerFile.Line;
-            L.Column := LexerFile.Column;
-            C := LexerFile.Advance;
-            State := STATE_DIGIT;
-          end
+        begin
+          L.token := L.token + C;
+          L.Line := LexerFile.Line;
+          L.Column := LexerFile.Column;
+          C := LexerFile.Advance;
+          State := STATE_DIGIT;
+        end
+
+        { check if 'c' is one of those symbols }
         else if C in ['+','-','*',';',',','.','(',')'] then
-          begin
-            L.token := L.token + C;
-            L.Line := LexerFile.Line;
-            L.Column := LexerFile.Column;
-            L.TokenType := SymbolUnit.Find(L.token);
-            C := LexerFile.Advance;
-            State := STATE_FINAL;
-          end
+        begin
+          L.token := L.token + C;
+          L.Line := LexerFile.Line;
+          L.Column := LexerFile.Column;
+          L.TokenType := SymbolUnit.Find(L.token);
+          C := LexerFile.Advance;
+          State := STATE_FINAL;
+        end
+
+        { this can be either a division or a single-line comment }
         else if C = '/' then
-          begin
-            L.token := L.token + C;
-            L.Line := LexerFile.Line;
-            L.Column := LexerFile.Column;
-            C := LexerFile.Advance;
-            State := STATE_SLASH;
-          end
+        begin
+          L.token := L.token + C;
+          L.Line := LexerFile.Line;
+          L.Column := LexerFile.Column;
+          C := LexerFile.Advance;
+          State := STATE_SLASH;
+        end
+
+        { beginning of a multi-line comment }
         else if C = '{' then
-          begin
-            C := LexerFile.Advance;
-            State := STATE_COMMENT_MULTI_LINE;
-          end
+        begin
+          C := LexerFile.Advance;
+          State := STATE_COMMENT_MULTI_LINE;
+        end
+
+        { this can be either a colon or a assign (:=) }
         else if C = ':' then
-          begin
-            L.token := L.token + C;
-            L.Line := LexerFile.Line;
-            L.Column := LexerFile.Column;
-            C := LexerFile.Advance;
-            State := STATE_COLON;
-          end
+        begin
+          L.token := L.token + C;
+          L.Line := LexerFile.Line;
+          L.Column := LexerFile.Column;
+          C := LexerFile.Advance;
+          State := STATE_COLON;
+        end
+
+        { can be less than (<), less or equal (<=) or difference (<>) }
         else if C = '<' then
-          begin
-            L.token := L.token + C;
-            L.Line := LexerFile.Line;
-            L.Column := LexerFile.Column;
-            C := LexerFile.Advance;
-            State := STATE_LESS_THAN;
-          end
+        begin
+          L.token := L.token + C;
+          L.Line := LexerFile.Line;
+          L.Column := LexerFile.Column;
+          C := LexerFile.Advance;
+          State := STATE_LESS_THAN;
+        end
+
+        { this can be either a greater than (>) or greater or equal (>=) }
         else if C = '>' then
-          begin
-            L.token := L.token + C;
-            L.Line := LexerFile.Line;
-            L.Column := LexerFile.Column;
-            C := LexerFile.Advance;
-            State := STATE_GREATER_THAN;
-          end
+        begin
+          L.token := L.token + C;
+          L.Line := LexerFile.Line;
+          L.Column := LexerFile.Column;
+          C := LexerFile.Advance;
+          State := STATE_GREATER_THAN;
+        end
+
+        { this is a equal to relational operator }
+        { (both '=' and '==' are 'equal to') }
         else if C = '=' then
-          begin
-            L.token := L.token + C;
-            L.Line := LexerFile.Line;
-            L.Column := LexerFile.Column;
-            C := LexerFile.Advance;
-            State := STATE_EQUAL;
-          end
+        begin
+          L.token := L.token + C;
+          L.Line := LexerFile.Line;
+          L.Column := LexerFile.Column;
+          C := LexerFile.Advance;
+          State := STATE_EQUAL;
+        end
+
+        { this is the start of a literal string. this token finishes }
+        { when another " is found. there must be a closing " before a }
+        { new line }
         else if C = '"' then
-          begin
-            L.Line := LexerFile.Line;
-            L.Column := LexerFile.Column;
-            C := LexerFile.Advance;
-            State := STATE_STRING;
-          end
+        begin
+          L.Line := LexerFile.Line;
+          L.Column := LexerFile.Column;
+          C := LexerFile.Advance;
+          State := STATE_STRING;
+        end
+
+        { end of file or invalid character }
         else
           raise ELexicalError.Create(LexicalError('invalid token', L));
       end;
 
       STATE_ALNUM: begin
         if IsAlphaNum(C) then
-          begin
-            L.token := L.token + C;
-            C := LexerFile.Advance;
-          end
+        begin
+          L.token := L.token + C;
+          C := LexerFile.Advance;
+        end
+
         else
-          begin
-            L.TokenType := SymbolUnit.Find(L.token);
-            State := STATE_FINAL;
-          end;
+        begin
+          { check if the token is in SymbolTable. if it doesn't, it's }
+          { a variable name }
+          L.TokenType := SymbolUnit.Find(L.token);
+          State := STATE_FINAL;
+        end;
       end;
 
       STATE_ZERO: begin
