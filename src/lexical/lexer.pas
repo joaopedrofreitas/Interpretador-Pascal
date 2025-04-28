@@ -246,7 +246,10 @@ begin
 
         { end of file or invalid character }
         else
-          raise ELexicalError.Create(LexicalError('invalid token', L));
+            begin
+              L.token := L.token + C;
+              raise ELexicalError.Create(LexicalError('invalid token', L));
+            end
       end;
 
       STATE_ALNUM: begin
@@ -286,10 +289,16 @@ begin
           end
         else if (C = '8') or (C = '9') then
           begin
-            raise ELexicalError.Create(LexicalError('8 and 9 are not octal digits', L))
+              begin
+                L.token := L.token + C;
+                raise ELexicalError.Create(LexicalError('8 and 9 are not octal digits', L));
+              end
           end
         else if IsAlpha(C) then
-          raise ELexicalError.Create(LexicalError('unexpected alphabetical character', L))
+            begin
+              L.token := L.token + C;
+              raise ELexicalError.Create(LexicalError('unexpected alphabetical character', L))
+            end
         else
           begin
             L.TokenType := TT_LITERAL_DECIMAL;
@@ -304,7 +313,10 @@ begin
             C := LexerFile.Advance;
           end
         else if IsAlpha(C) then
-          raise ELexicalError.Create(LexicalError('unexpected alphabetical character', L))
+            begin
+              L.token := L.token + C;
+              raise ELexicalError.Create(LexicalError('unexpected alphabetical character', L));
+            end
         else
           begin
             L.TokenType := TT_LITERAL_OCTAL;
@@ -319,9 +331,15 @@ begin
             C := LexerFile.Advance;
           end
         else if (C >= 'a') and (C <= 'f') then
-          raise ELexicalError.Create(LexicalError('hexadecimals must use upper case letters', L))
+            begin
+              L.token := L.token + C;
+              raise ELexicalError.Create(LexicalError('hexadecimals must use upper case letters', L));
+            end
         else if IsAlpha(C) then
-          raise ELexicalError.Create(LexicalError('unexpected alphabetical character', L))
+            begin
+              L.token := L.token + C;
+              raise ELexicalError.Create(LexicalError('unexpected alphabetical character', L));
+            end
         else
           begin
             L.TokenType := TT_LITERAL_HEX;
@@ -342,7 +360,10 @@ begin
             State := STATE_REAL;
           end
         else if IsAlpha(C) then
-          raise ELexicalError.Create(LexicalError('unexpected alphabetical character', L))
+            begin
+              L.token := L.token + C;
+              raise ELexicalError.Create(LexicalError('unexpected alphabetical character', L));
+            end
         else
           begin
             L.TokenType := TT_LITERAL_DECIMAL;
@@ -357,7 +378,10 @@ begin
             C := LexerFile.Advance;
           end
         else if IsAlpha(C) then
-          raise ELexicalError.Create(LexicalError('unexpected alphabetical character', L))
+            begin
+              L.token := L.token + C;
+              raise ELexicalError.Create(LexicalError('unexpected alphabetical character', L));
+            end
         else
           begin
             L.TokenType := TT_LITERAL_REAL;
@@ -396,7 +420,10 @@ begin
             State := STATE_INITIAL;
           end
         else if C = #0 then
-          raise ELexicalError.Create(LexicalError('unexpected end of file inside comment', L))
+            begin
+              L.token := L.token + C;
+              raise ELexicalError.Create(LexicalError('unexpected end of file inside comment', L));
+            end
         else
           C := LexerFile.Advance;
       end;
@@ -454,9 +481,15 @@ begin
               State := STATE_FINAL;
           end
           else if C = #0 then
-              raise ELexicalError.Create(LexicalError('unexpected end of file inside string', L))
+              begin
+                L.token := L.token + C;
+                raise ELexicalError.Create(LexicalError('unexpected end of file inside string', L));
+              end
           else if C = #10 then   
-              raise ELexicalError.Create(LexicalError('new line while trying to tokenize string literal', L))
+              begin
+                L.token := L.token + C;
+                raise ELexicalError.Create(LexicalError('new line while trying to tokenize string literal', L));
+              end
           else if (Length(L.token) > 0) and (L.token[Length(L.token)] = '\') then
           begin
               // Processamento de escape
@@ -468,7 +501,10 @@ begin
                   '\':  L.token := L.token + '\';  // Barra invertida literal
                   '"':  L.token := L.token + '"';  // Aspas literal
               else
-                  raise ELexicalError.Create(LexicalError('not defined escape code', L));
+                    begin
+                      L.token := L.token + C;
+                      raise ELexicalError.Create(LexicalError('not defined escape code', L));
+                    end
               end;
               C := LexerFile.Advance;
               State := STATE_STRING;
