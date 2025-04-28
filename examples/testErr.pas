@@ -1,4 +1,3 @@
-
 program equal;
 
 var

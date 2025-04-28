@@ -103,6 +103,7 @@ begin
           LexerLexemes[High(LexerLexemes)] := L;
         end
     until L.TokenType = TT_END_OF_FILE;
+    
   finally
     LexerFile.Close;
   end;
