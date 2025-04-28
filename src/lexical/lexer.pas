@@ -97,9 +97,12 @@ begin
   try
     repeat
       L := MakeLexeme;
-      SetLength(LexerLexemes, Length(LexerLexemes) + 1);  // redimensiona o array dinâmico :contentReference[oaicite:2]{index=2}
-      LexerLexemes[High(LexerLexemes)] := L;
-    until L.TokenType = TT_END;                  
+      if L.TokenType <> TT_END_OF_FILE then
+        begin
+          SetLength(LexerLexemes, Length(LexerLexemes) + 1);  // redimensiona o array dinâmico :contentReference[oaicite:2]{index=2}
+          LexerLexemes[High(LexerLexemes)] := L;
+        end
+    until L.TokenType = TT_END_OF_FILE;
   finally
     LexerFile.Close;
   end;
