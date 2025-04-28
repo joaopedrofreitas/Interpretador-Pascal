@@ -4,7 +4,7 @@ FPC = fpc
 # Diretórios
 SRC_DIR = src
 LEX_DIR = $(SRC_DIR)/lexical
-UTIL_DIR = $(SRC_DIR)/src/util
+UTIL_DIR = $(SRC_DIR)/util
 
 # Unidades necessárias
 UNITS = \
