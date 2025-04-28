@@ -13,7 +13,8 @@ A compilação do projeto é feita por um arquivo Makefile utilizando a versão 
 | **make**         | Executa a compilação do programa utilizando o FPC. O executável é gerado na pasta `src` |
 
 ### Diretivas de Execução  
-**DENTRO DA PASTA `src` EXECUTE:**  
+Para acessar a pasta ```src ```: ``` cd src/ ```
+**DENTRO DA PASTA `src` EXECUTE:**   
 ```./main ../examples/hello.pas```
 ### Autores ✏️
 João Pedro Freitas de Paula Dias
