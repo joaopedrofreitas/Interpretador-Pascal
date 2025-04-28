@@ -387,6 +387,7 @@ begin
             end
         else
           begin
+            L.token := L.token + '0';
             L.TokenType := TT_LITERAL_REAL;
             State := STATE_FINAL;
           end;

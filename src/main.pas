@@ -27,7 +27,7 @@ begin
       for i := 0 to High(lexemes) do
       begin
         lex := lexemes[i];
-        WriteLn('Token: ', lex.str);
+        WriteLn(lex.str);
       end;
     finally
       L.Free;
