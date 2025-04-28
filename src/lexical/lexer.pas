@@ -99,7 +99,7 @@ begin
       L := MakeLexeme;
       SetLength(LexerLexemes, Length(LexerLexemes) + 1);  // redimensiona o array dinâmico :contentReference[oaicite:2]{index=2}
       LexerLexemes[High(LexerLexemes)] := L;
-    until L.TokenType = TT_END_OF_FILE;                  // garante que o EOF seja incluído :contentReference[oaicite:3]{index=3}
+    until L.TokenType = TT_END;                  
   finally
     LexerFile.Close;
   end;
@@ -284,6 +284,10 @@ begin
             C := LexerFile.Advance;
             State := STATE_REAL;
           end
+        else if (C = '8') or (C = '9') then
+          begin
+            raise ELexicalError.Create(LexicalError('8 and 9 are not octal digits', L))
+          end
         else if IsAlpha(C) then
           raise ELexicalError.Create(LexicalError('unexpected alphabetical character', L))
         else
@@ -441,23 +445,41 @@ begin
         L.TokenType := TT_EQUAL;
         State := STATE_FINAL;
       end;
-
+             
       STATE_STRING: begin
-        if C = '"' then
+          if C = '"' then
           begin
-            C := LexerFile.Advance;
-            L.TokenType := TT_LITERAL_STRING;
-            State := STATE_FINAL;
+              C := LexerFile.Advance;
+              L.TokenType := TT_LITERAL_STRING;
+              State := STATE_FINAL;
           end
-        else if C = #0 then
-          raise ELexicalError.Create(LexicalError('unexpected end of file inside string', L))
-        else
+          else if C = #0 then
+              raise ELexicalError.Create(LexicalError('unexpected end of file inside string', L))
+          else if C = #10 then   
+              raise ELexicalError.Create(LexicalError('new line while trying to tokenize string literal', L))
+          else if (Length(L.token) > 0) and (L.token[Length(L.token)] = '\') then
           begin
-            L.token := L.token + C;
-            C := LexerFile.Advance;
+              // Processamento de escape
+              L.token := Copy(L.token, 1, Length(L.token) - 1);  
+              case C of
+                  'n':  L.token := L.token + #10;  // Nova linha
+                  't':  L.token := L.token + #9;   // Tabulação
+                  'r':  L.token := L.token + #13;  // Retorno de carro
+                  '\':  L.token := L.token + '\';  // Barra invertida literal
+                  '"':  L.token := L.token + '"';  // Aspas literal
+              else
+                  raise ELexicalError.Create(LexicalError('not defined escape code', L));
+              end;
+              C := LexerFile.Advance;
+              State := STATE_STRING;
+          end
+          else
+          begin
+              L.token := L.token + C;
+              C := LexerFile.Advance;
+              State := STATE_STRING;
           end;
-      end;
-
+      end;      
     end;  // case State
   Result := L;
 end;

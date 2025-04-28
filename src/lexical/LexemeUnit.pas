@@ -29,8 +29,8 @@ end;
 
 function TLexeme.str: string;
 begin
-  Result := '(' + IntToStr(line) + ', ' + IntToStr(column) 
-    + ', "' + token + '", ' + tt2str(TokenType) + ')';
+  Result := '(' + tt2str(TokenType) + ', ' + token 
+    + ', "' + IntToStr(line) + '", ' + IntToStr(column) + ')';
 end;
 
 end.
