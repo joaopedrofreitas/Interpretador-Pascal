@@ -381,11 +381,19 @@ begin
             L.token := L.token + C;
             C := LexerFile.Advance;
           end
+
         else if IsAlpha(C) then
-            begin
-              L.token := L.token + C;
-              raise ELexicalError.Create(LexicalError('unexpected alphabetical character', L));
-            end
+          begin
+            L.token := L.token + C;
+            raise ELexicalError.Create(LexicalError('unexpected alphabetical character', L));
+          end
+
+        else if (c = '.') then
+          begin
+            L.token := L.token + C;
+            raise ELexicalError.Create(LexicalError('more than one period', L));
+          end
+
         else
           begin
             L.token := L.token + '0';
