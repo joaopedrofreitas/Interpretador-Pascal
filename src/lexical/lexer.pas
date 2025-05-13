@@ -51,14 +51,20 @@ type
     STATE_FINAL
   );
 
+
 function IsAlpha(C: AnsiChar): Boolean;
 begin
-  Result := C in ['A'..'Z', 'a'..'z'];
+  Result := ((C >= 'A') and (C <= 'Z')) or ((C >= 'a') and (C <= 'z'));
 end;
 
 function IsDigit(C: AnsiChar): Boolean;
 begin
-  Result := C in ['0'..'9'];
+  Result := (C >= '0') and (C <= '9');
+end;
+
+function IsHex(C: AnsiChar): Boolean;
+begin
+  Result := ((C >= '0') and (C <= '9')) or ((C >= 'A') and (C <= 'F'));
 end;
 
 function IsAlphaNum(C: AnsiChar): Boolean;
@@ -69,11 +75,6 @@ end;
 function IsOctal(C: AnsiChar): Boolean;
 begin
   Result := (C >= '0') and (C <= '7');
-end;
-
-function IsHex(C: AnsiChar): Boolean;
-begin
-  Result := C in ['0'..'9', 'A'..'F'];
 end;
 
 constructor TLexer.Create;
@@ -168,17 +169,7 @@ begin
           State := STATE_DIGIT;
         end
 
-        { check if 'c' is one of those symbols }
-        else if C in ['+','-','*',';',',','.','(',')'] then
-        begin
-          L.token := L.token + C;
-          L.Line := LexerFile.Line;
-          L.Column := LexerFile.Column;
-          L.TokenType := SymbolUnit.Find(L.token);
-          C := LexerFile.Advance;
-          State := STATE_FINAL;
-        end
-
+       
         { this can be either a division or a single-line comment }
         else if C = '/' then
         begin
@@ -246,6 +237,17 @@ begin
           L.Column := LexerFile.Column;
           C := LexerFile.Advance;
           State := STATE_STRING;
+        end
+        
+        { check if 'c' is one of those symbols }
+        else if C in ['+','-','*',';',',','.','(',')'] then
+        begin
+          L.token := L.token + C;
+          L.Line := LexerFile.Line;
+          L.Column := LexerFile.Column;
+          L.TokenType := SymbolUnit.Find(L.token);
+          C := LexerFile.Advance;
+          State := STATE_FINAL;
         end
 
         { end of file or invalid character }
@@ -318,10 +320,8 @@ begin
           end
         else if (C = '8') or (C = '9') then
           begin
-              begin
-                L.token := L.token + C;
-                raise ELexicalError.Create(LexicalError('8 and 9 are not octal digits', L));
-              end
+              L.token := L.token + C;
+              raise ELexicalError.Create(LexicalError('8 and 9 are not octal digits', L));
           end
         else if IsAlpha(C) then
             begin
