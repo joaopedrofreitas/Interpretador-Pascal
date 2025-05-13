@@ -1,5 +1,7 @@
 program equal;
 
+12..3
+
 var
   a, b: interger;
   r: real = 3.;

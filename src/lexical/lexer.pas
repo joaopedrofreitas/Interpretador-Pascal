@@ -316,6 +316,13 @@ begin
             L.token := L.token + C;
             C := LexerFile.Advance;
           end
+        else if (C = '8') or (C = '9') then
+          begin
+              begin
+                L.token := L.token + C;
+                raise ELexicalError.Create(LexicalError('8 and 9 are not octal digits', L));
+              end
+          end
         else if IsAlpha(C) then
             begin
               L.token := L.token + C;
