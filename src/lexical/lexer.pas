@@ -255,10 +255,10 @@ begin
 
         { end of file or invalid character }
         else
-            begin
-              L.token := L.token + C;
-              raise ELexicalError.Create(LexicalError('invalid token', L));
-            end
+        begin
+          L.token := L.token + C;
+          raise ELexicalError.Create(LexicalError('invalid token', L));
+        end
       end;
 
       STATE_ALNUM: begin
@@ -273,8 +273,10 @@ begin
           { check if the token is in SymbolTable. if it doesn't, it's }
           { a variable name }
           symbol := SymbolUnit.Find(L.token);
+
           if symbol <> TT_INVALID then
             L.TokenType = symbol
+
           else
             L.TokenType := TT_IDENT;
             
@@ -284,265 +286,302 @@ begin
 
       STATE_ZERO: begin
         if IsOctal(C) then
-          begin
-            L.token := L.token + C;
-            C := LexerFile.Advance();
-            State := STATE_OCTAL;
-          end
+        begin
+          L.token := L.token + C;
+          C := LexerFile.Advance();
+          State := STATE_OCTAL;
+        end
+
         else if C = 'x' then
-          begin
-            L.token := L.token + C;
-            C := LexerFile.Advance();
-            State := STATE_HEX;
-          end
+        begin
+          L.token := L.token + C;
+          C := LexerFile.Advance();
+          State := STATE_HEX;
+        end
+
         else if C = '.' then
+        begin
+          L.token := L.token + C;
+          C := LexerFile.Advance();
+          State := STATE_REAL;
+        end
+
+        else if (C = '8') or (C = '9') then
+        begin
           begin
             L.token := L.token + C;
-            C := LexerFile.Advance();
-            State := STATE_REAL;
+            raise ELexicalError.Create(LexicalError('8 and 9 are not octal digits', L));
           end
-        else if (C = '8') or (C = '9') then
-          begin
-              begin
-                L.token := L.token + C;
-                raise ELexicalError.Create(LexicalError('8 and 9 are not octal digits', L));
-              end
-          end
+        end
+
         else if IsAlpha(C) then
-            begin
-              L.token := L.token + C;
-              raise ELexicalError.Create(LexicalError('unexpected alphabetical character', L))
-            end
+        begin
+          L.token := L.token + C;
+          raise ELexicalError.Create(LexicalError('unexpected alphabetical character', L))
+        end
+
         else
-          begin
-            L.TokenType := TT_LITERAL_DECIMAL;
-            State := STATE_FINAL;
-          end;
+        begin
+          L.TokenType := TT_LITERAL_DECIMAL;
+          State := STATE_FINAL;
+        end;
       end;
 
       STATE_OCTAL: begin
         if IsOctal(C) then
-          begin
-            L.token := L.token + C;
-            C := LexerFile.Advance();
-          end
+        begin
+          L.token := L.token + C;
+          C := LexerFile.Advance();
+        end
+
         else if (C = '8') or (C = '9') then
-          begin
-              L.token := L.token + C;
-              raise ELexicalError.Create(LexicalError('8 and 9 are not octal digits', L));
-          end
+        begin
+          L.token := L.token + C;
+          raise ELexicalError.Create(LexicalError('8 and 9 are not octal digits', L));
+        end
+
         else if IsAlpha(C) then
-            begin
-              L.token := L.token + C;
-              raise ELexicalError.Create(LexicalError('unexpected alphabetical character', L));
-            end
+        begin
+          L.token := L.token + C;
+          raise ELexicalError.Create(LexicalError('unexpected alphabetical character', L));
+        end
+
         else
-          begin
-            L.TokenType := TT_LITERAL_OCTAL;
-            State := STATE_FINAL;
-          end;
+        begin
+          L.TokenType := TT_LITERAL_OCTAL;
+          State := STATE_FINAL;
+        end;
       end;
 
       STATE_HEX: begin
         if IsHex(C) then
-          begin
-            L.token := L.token + C;
-            C := LexerFile.Advance();
-          end
+        begin
+          L.token := L.token + C;
+          C := LexerFile.Advance();
+        end
+
         else if (C >= 'a') and (C <= 'f') then
-            begin
-              L.token := L.token + C;
-              raise ELexicalError.Create(LexicalError('hexadecimals must use upper case letters', L));
-            end
+        begin
+          L.token := L.token + C;
+          raise ELexicalError.Create(LexicalError('hexadecimals must use upper case letters', L));
+        end
+
         else if IsAlpha(C) then
-            begin
-              L.token := L.token + C;
-              raise ELexicalError.Create(LexicalError('unexpected alphabetical character', L));
-            end
+        begin
+          L.token := L.token + C;
+          raise ELexicalError.Create(LexicalError('unexpected alphabetical character', L));
+        end
+
         else
-          begin
-            L.TokenType := TT_LITERAL_HEX;
-            State := STATE_FINAL;
-          end;
+        begin
+          L.TokenType := TT_LITERAL_HEX;
+          State := STATE_FINAL;
+        end;
       end;
 
       STATE_DIGIT: begin
         if IsDigit(C) then
-          begin
-            L.token := L.token + C;
-            C := LexerFile.Advance();
-          end
+        begin
+          L.token := L.token + C;
+          C := LexerFile.Advance();
+        end
+
         else if C = '.' then
-          begin
-            L.token := L.token + C;
-            C := LexerFile.Advance();
-            State := STATE_REAL;
-          end
+        begin
+          L.token := L.token + C;
+          C := LexerFile.Advance();
+          State := STATE_REAL;
+        end
+
         else if IsAlpha(C) then
-            begin
-              L.token := L.token + C;
-              raise ELexicalError.Create(LexicalError('unexpected alphabetical character', L));
-            end
+        begin
+          L.token := L.token + C;
+          raise ELexicalError.Create(LexicalError('unexpected alphabetical character', L));
+        end
+
         else
-          begin
-            L.TokenType := TT_LITERAL_DECIMAL;
-            State := STATE_FINAL;
-          end;
+        begin
+          L.TokenType := TT_LITERAL_DECIMAL;
+          State := STATE_FINAL;
+        end;
       end;
 
       STATE_REAL: begin
         if IsDigit(C) then
-          begin
-            L.token := L.token + C;
-            C := LexerFile.Advance();
-          end
+        begin
+          L.token := L.token + C;
+          C := LexerFile.Advance();
+        end
 
         else if IsAlpha(C) then
-          begin
-            L.token := L.token + C;
-            raise ELexicalError.Create(LexicalError('unexpected alphabetical character', L));
-          end
+        begin
+          L.token := L.token + C;
+          raise ELexicalError.Create(LexicalError('unexpected alphabetical character', L));
+        end
 
         else if (c = '.') then
-          begin
-            L.token := L.token + C;
-            raise ELexicalError.Create(LexicalError('more than one period', L));
-          end
+        begin
+          L.token := L.token + C;
+          raise ELexicalError.Create(LexicalError('more than one period', L));
+        end
 
         else
-          begin
-            L.token := L.token + '0';
-            L.TokenType := TT_LITERAL_REAL;
-            State := STATE_FINAL;
-          end;
+        begin
+          L.token := L.token + '0';
+          L.TokenType := TT_LITERAL_REAL;
+          State := STATE_FINAL;
+        end;
       end;
 
       STATE_SLASH: begin
         if C = '/' then
-          begin
-            L.token := '';
-            C := LexerFile.Advance();
-            State := STATE_COMMENT_SINGLE_LINE;
-          end
+        begin
+          L.token := '';
+          C := LexerFile.Advance();
+          State := STATE_COMMENT_SINGLE_LINE;
+        end
+
         else
-          begin
-            L.TokenType := SymbolUnit.Find(L.token);
-            State := STATE_FINAL;
-          end;
+        begin
+          L.TokenType := SymbolUnit.Find(L.token);
+          State := STATE_FINAL;
+        end;
       end;
 
       STATE_COMMENT_SINGLE_LINE: begin
         if (C <> #10) and (C <> #0) then
           C := LexerFile.Advance()
+
         else
-          begin
-            C := LexerFile.Advance();
-            State := STATE_INITIAL;
-          end;
+        begin
+          C := LexerFile.Advance();
+          State := STATE_INITIAL;
+        end;
       end;
 
       STATE_COMMENT_MULTI_LINE: begin
         if C = '}' then
-          begin
-            C := LexerFile.Advance();
-            State := STATE_INITIAL;
-          end
+        begin
+          C := LexerFile.Advance();
+          State := STATE_INITIAL;
+        end
+
         else if C = #0 then
-            begin
-              L.token := L.token + C;
-              raise ELexicalError.Create(LexicalError('unexpected end of file inside comment', L));
-            end
+        begin
+          L.token := L.token + C;
+          raise ELexicalError.Create(LexicalError('unexpected end of file inside comment', L));
+        end
+
         else
           C := LexerFile.Advance();
       end;
 
       STATE_COLON: begin
         if C = '=' then
-          begin
-            L.token := L.token + C;
-            C := LexerFile.Advance();
-          end;
+        begin
+          L.token := L.token + C;
+          C := LexerFile.Advance();
+        end;
+
         L.TokenType := SymbolUnit.Find(L.token);
         State := STATE_FINAL;
       end;
 
       STATE_LESS_THAN: begin
         if C = '=' then
-          begin
-            L.token := L.token + C;
-            C := LexerFile.Advance();
-          end
+        begin
+          L.token := L.token + C;
+          C := LexerFile.Advance();
+        end
+
         else if C = '>' then
-          begin
-            L.token := L.token + C;
-            C := LexerFile.Advance();
-          end;
+        begin
+          L.token := L.token + C;
+          C := LexerFile.Advance();
+        end;
+
         L.TokenType := SymbolUnit.Find(L.token);
         State := STATE_FINAL;
       end;
 
       STATE_GREATER_THAN: begin
         if C = '=' then
-          begin
-            L.token := L.token + C;
-            C := LexerFile.Advance();
-          end;
+        begin
+          L.token := L.token + C;
+          C := LexerFile.Advance();
+        end;
+
         L.TokenType := SymbolUnit.Find(L.token);
         State := STATE_FINAL;
       end;
 
       STATE_EQUAL: begin
         if C = '=' then
+<<<<<<< HEAD
           begin
             L.token := L.token + C;
             C := LexerFile.Advance();
           end;
         L.TokenType := TT_EQL;
+=======
+        begin
+          L.token := L.token + C;
+          C := LexerFile.Advance();
+        end;
+
+        L.TokenType := TT_EQUAL;
+>>>>>>> refs/remotes/origin/master
         State := STATE_FINAL;
       end;
              
       STATE_STRING: begin
-          if C = '"' then
-          begin
-              C := LexerFile.Advance();
-              L.TokenType := TT_LITERAL_STRING;
-              State := STATE_FINAL;
-          end
-          else if C = #0 then
-              begin
-                L.token := L.token + C;
-                raise ELexicalError.Create(LexicalError('unexpected end of file inside string', L));
-              end
-          else if C = #10 then   
-              begin
-                L.token := L.token + C;
-                raise ELexicalError.Create(LexicalError('new line while trying to tokenize string literal', L));
-              end
-          else if (Length(L.token) > 0) and (L.token[Length(L.token)] = '\') then
-          begin
-              // Processamento de escape
-              L.token := Copy(L.token, 1, Length(L.token) - 1);  
-              case C of
-                  'n':  L.token := L.token + #10;  // Nova linha
-                  't':  L.token := L.token + #9;   // Tabulação
-                  'r':  L.token := L.token + #13;  // Retorno de carro
-                  '\':  L.token := L.token + '\';  // Barra invertida literal
-                  '"':  L.token := L.token + '"';  // Aspas literal
-              else
-                    begin
-                      L.token := L.token + C;
-                      raise ELexicalError.Create(LexicalError('not defined escape code', L));
-                    end
-              end;
-              C := LexerFile.Advance();
-              State := STATE_STRING;
-          end
+        if C = '"' then
+        begin
+          C := LexerFile.Advance();
+          L.TokenType := TT_LITERAL_STRING;
+          State := STATE_FINAL;
+        end
+
+        else if C = #0 then
+        begin
+          L.token := L.token + C;
+          raise ELexicalError.Create(LexicalError('unexpected end of file inside string', L));
+        end
+
+        else if C = #10 then   
+        begin
+          L.token := L.token + C;
+          raise ELexicalError.Create(LexicalError('new line while trying to tokenize string literal', L));
+        end
+
+        else if (Length(L.token) > 0) and (L.token[Length(L.token)] = '\') then
+        begin
+          // Processamento de escape
+          L.token := Copy(L.token, 1, Length(L.token) - 1);  
+          case C of
+            'n':  L.token := L.token + #10;  // Nova linha
+            't':  L.token := L.token + #9;   // Tabulação
+            'r':  L.token := L.token + #13;  // Retorno de carro
+            '\':  L.token := L.token + '\';  // Barra invertida literal
+            '"':  L.token := L.token + '"';  // Aspas literal
+
           else
           begin
-              L.token := L.token + C;
-              C := LexerFile.Advance();
-              State := STATE_STRING;
+            L.token := L.token + C;
+            raise ELexicalError.Create(LexicalError('not defined escape code', L));
+          end
           end;
+
+          C := LexerFile.Advance();
+          State := STATE_STRING;
+        end
+
+        else
+        begin
+          L.token := L.token + C;
+          C := LexerFile.Advance();
+          State := STATE_STRING;
+        end;
       end;      
     end;  // case State
   Result := L;
