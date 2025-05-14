@@ -124,7 +124,7 @@ begin
   L.token := '';
   L.Line := LexerFile.Line;
   L.Column := LexerFile.Column;
-  L.TokenType := TT_VAR_NAME;
+  L.TokenType := TT_VARSYM;
   C := LexerFile.Peek();
   State := STATE_INITIAL;
 
@@ -497,7 +497,7 @@ begin
             L.token := L.token + C;
             C := LexerFile.Advance();
           end;
-        L.TokenType := TT_EQUAL;
+        L.TokenType := TT_EQL;
         State := STATE_FINAL;
       end;
              

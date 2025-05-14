@@ -5,8 +5,8 @@ interface
 type
   TokenT = (
     { Special }
-    TT_UNEXPECTED_EOF = -2,
-    TT_INVALID_TOKEN  = -1,
+    
+    TT_INVALID  = -1,
     TT_END_OF_FILE,
 
     { Arithmetic operators }
@@ -32,9 +32,9 @@ type
     { Keywords }
     TT_PROGRAMSYM,         { program }
     TT_VARSYM,             { var }
-    TT_TYPE_INTEGER,       { integer }
+    TT_TYPE_INT,       { integer }
     TT_TYPE_REAL,          { real }
-    TT_TYPE_STRING,        { string }
+    TT_TYPE_STR,        { string }
     TT_BEGINSYM,           { begin }
     TT_ENDSYM,             { end }
     TT_FORSYM,             { for }
@@ -77,8 +77,7 @@ function tt2str(token: TokenT): string;
 begin
   case token of
     { Special }
-    TT_UNEXPECTED_EOF:    tt2str := 'UNEXPECTED_EOF';
-    TT_INVALID_TOKEN:     tt2str := 'INVALID_TOKEN';
+    TT_INVALID:           tt2str := 'INVALID_TOKEN';
     TT_END_OF_FILE:       tt2str := 'END_OF_FILE';
 
     { Arithmetic operators }
@@ -104,9 +103,9 @@ begin
     { Keywords }
     TT_PROGRAMSYM:        tt2str := 'PROGRAMSYM';
     TT_VARSYM:            tt2str := 'VARSYM';
-    TT_TYPE_INTEGER:      tt2str := 'TYPE_INTEGER';
+    TT_TYPE_INT:          tt2str := 'TYPE_INTEGER';
     TT_TYPE_REAL:         tt2str := 'TYPE_REAL';
-    TT_TYPE_STRING:       tt2str := 'TYPE_STRING';
+    TT_TYPE_STR:          tt2str := 'TYPE_STRING';
     TT_BEGINSYM:          tt2str := 'BEGINSYM';
     TT_ENDSYM:            tt2str := 'ENDSYM';
     TT_FORSYM:            tt2str := 'FORSYM';
