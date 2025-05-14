@@ -15,53 +15,53 @@ type
     TT_MUL,                { * }
     TT_DIV,                { / }
     TT_MOD,                { mod }
-    TT_DIVINT,             { div }
+    TT_FLOORDIV,           { div }
 
     { Logical, relational operators and assignments }
     TT_OR,                 { or }
     TT_AND,                { and }
     TT_NOT,                { not }
-    TT_EQUAL,              { == }
-    TT_DIFFERENCE,         { <> }
-    TT_GREATER,            { > }
-    TT_GREATER_EQUAL,      { >= }
-    TT_LOWER,              { < }
-    TT_LOWER_EQUAL,        { <= }
+    TT_EQL,                { == }
+    TT_NEQ,                { <> }
+    TT_GTR,                { > }
+    TT_GEQ,                { >= }
+    TT_LSS,                { < }
+    TT_LEQ,                { <= }
     TT_ASSIGN,             { := }
 
     { Keywords }
-    TT_PROGRAM,            { program }
-    TT_VAR,                { var }
+    TT_PROGRAMSYM,         { program }
+    TT_VARSYM,             { var }
     TT_TYPE_INTEGER,       { integer }
     TT_TYPE_REAL,          { real }
     TT_TYPE_STRING,        { string }
-    TT_BEGIN,              { begin }
-    TT_END,                { end }
-    TT_FOR,                { for }
-    TT_TO,                 { to }
-    TT_WHILE,              { while }
-    TT_DO,                 { do }
-    TT_BREAK,              { break }
-    TT_CONTINUE,           { continue }
-    TT_IF,                 { if }
-    TT_ELSE,               { else }
-    TT_THEN,               { then }
-    TT_WRITE,              { write }
-    TT_WRITELN,            { writeln }
-    TT_READ,               { read }
-    TT_READLN,             { readln }
+    TT_BEGINSYM,           { begin }
+    TT_ENDSYM,             { end }
+    TT_FORSYM,             { for }
+    TT_TOSYM,              { to }
+    TT_WHILESYM,           { while }
+    TT_DOSYM,              { do }
+    TT_BREAKSYM,           { break }
+    TT_CONTINUESYM,        { continue }
+    TT_IFSYM,              { if }
+    TT_ELSESYM,            { else }
+    TT_THENSYM,            { then }
+    TT_WRITESYM,           { write }
+    TT_WRITELNSYM,         { writeln }
+    TT_READSYM,            { read }
+    TT_READLNSYM,          { readln }
 
     { Symbols }
     TT_SEMICOLON,          { ; }
     TT_COMMA,              { , }
     TT_PERIOD,             { . }
     TT_COLON,              { : }
-    TT_OPEN_PARENTHESES,   { ( }
-    TT_CLOSE_PARENTHESES,  { ) }
+    TT_LPAREN,             { ( }
+    TT_RPAREN,             { ) }
     TT_QUOTES,             { " }
 
     { Others }
-    TT_VAR_NAME,
+    TT_IDENT,
     TT_LITERAL_OCTAL,
     TT_LITERAL_DECIMAL,
     TT_LITERAL_HEX,
@@ -76,7 +76,7 @@ implementation
 function tt2str(token: TokenT): string;
 begin
   case token of
-    { Specials }
+    { Special }
     TT_UNEXPECTED_EOF:    tt2str := 'UNEXPECTED_EOF';
     TT_INVALID_TOKEN:     tt2str := 'INVALID_TOKEN';
     TT_END_OF_FILE:       tt2str := 'END_OF_FILE';
@@ -87,53 +87,53 @@ begin
     TT_MUL:               tt2str := 'MUL';
     TT_DIV:               tt2str := 'DIV';
     TT_MOD:               tt2str := 'MOD';
-    TT_DIVINT:            tt2str := 'DIVINT';
+    TT_FLOORDIV:          tt2str := 'FLOORDIV';
 
     { Logical, relational operators and assignments }
     TT_OR:                tt2str := 'OR';
     TT_AND:               tt2str := 'AND';
     TT_NOT:               tt2str := 'NOT';
-    TT_EQUAL:             tt2str := 'EQUAL';
-    TT_DIFFERENCE:        tt2str := 'DIFFERENCE';
-    TT_GREATER:           tt2str := 'GREATER';
-    TT_GREATER_EQUAL:     tt2str := 'GREATER_EQUAL';
-    TT_LOWER:             tt2str := 'LOWER';
-    TT_LOWER_EQUAL:       tt2str := 'LOWER_EQUAL';
+    TT_EQL:               tt2str := 'EQL';
+    TT_NEQ:               tt2str := 'NEQ';
+    TT_GTR:               tt2str := 'GTR';
+    TT_GEQ:               tt2str := 'GEQ';
+    TT_LSS:               tt2str := 'LSS';
+    TT_LEQ:               tt2str := 'LEQ';
     TT_ASSIGN:            tt2str := 'ASSIGN';
+
+    { Keywords }
+    TT_PROGRAMSYM:        tt2str := 'PROGRAMSYM';
+    TT_VARSYM:            tt2str := 'VARSYM';
+    TT_TYPE_INTEGER:      tt2str := 'TYPE_INTEGER';
+    TT_TYPE_REAL:         tt2str := 'TYPE_REAL';
+    TT_TYPE_STRING:       tt2str := 'TYPE_STRING';
+    TT_BEGINSYM:          tt2str := 'BEGINSYM';
+    TT_ENDSYM:            tt2str := 'ENDSYM';
+    TT_FORSYM:            tt2str := 'FORSYM';
+    TT_TOSYM:             tt2str := 'TOSYM';
+    TT_WHILESYM:          tt2str := 'WHILESYM';
+    TT_DOSYM:             tt2str := 'DOSYM';
+    TT_BREAKSYM:          tt2str := 'BREAKSYM';
+    TT_CONTINUESYM:       tt2str := 'CONTINUESYM';
+    TT_IFSYM:             tt2str := 'IFSYM';
+    TT_ELSESYM:           tt2str := 'ELSESYM';
+    TT_THENSYM:           tt2str := 'THENSYM';
+    TT_WRITESYM:          tt2str := 'WRITESYM';
+    TT_WRITELNSYM:        tt2str := 'WRITELNSYM';
+    TT_READSYM:           tt2str := 'READSYM';
+    TT_READLNSYM:         tt2str := 'READLNSYM';
 
     { Symbols }
     TT_SEMICOLON:         tt2str := 'SEMICOLON';
     TT_COMMA:             tt2str := 'COMMA';
     TT_PERIOD:            tt2str := 'PERIOD';
     TT_COLON:             tt2str := 'COLON';
-    TT_OPEN_PARENTHESES:  tt2str := 'OPEN_PARENTHESES';
-    TT_CLOSE_PARENTHESES: tt2str := 'CLOSE_PARENTHESES';
+    TT_LPAREN:            tt2str := 'LPAREN';
+    TT_RPAREN:            tt2str := 'RPAREN';
     TT_QUOTES:            tt2str := 'QUOTES';
 
-    { Keywords }
-    TT_PROGRAM:           tt2str := 'PROGRAM';
-    TT_VAR:               tt2str := 'VAR';
-    TT_TYPE_INTEGER:      tt2str := 'TYPE_INTEGER';
-    TT_TYPE_REAL:         tt2str := 'TYPE_REAL';
-    TT_TYPE_STRING:       tt2str := 'TYPE_STRING';
-    TT_BEGIN:             tt2str := 'BEGIN';
-    TT_END:               tt2str := 'END';
-    TT_FOR:               tt2str := 'FOR';
-    TT_TO:                tt2str := 'TO';
-    TT_WHILE:             tt2str := 'WHILE';
-    TT_DO:                tt2str := 'DO';
-    TT_BREAK:             tt2str := 'BREAK';
-    TT_CONTINUE:          tt2str := 'CONTINUE';
-    TT_IF:                tt2str := 'IF';
-    TT_ELSE:              tt2str := 'ELSE';
-    TT_THEN:              tt2str := 'THEN';
-    TT_WRITE:             tt2str := 'WRITE';
-    TT_WRITELN:           tt2str := 'WRITELN';
-    TT_READ:              tt2str := 'READ';
-    TT_READLN:            tt2str := 'READLN';
-
     { Others }
-    TT_VAR_NAME:          tt2str := 'VAR_NAME';
+    TT_IDENT:             tt2str := 'IDENT';
     TT_LITERAL_OCTAL:     tt2str := 'LITERAL_OCTAL';
     TT_LITERAL_DECIMAL:   tt2str := 'LITERAL_DECIMAL';
     TT_LITERAL_HEX:       tt2str := 'LITERAL_HEX';
@@ -147,4 +147,3 @@ begin
 end;
 
 end.
-

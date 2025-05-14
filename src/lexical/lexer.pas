@@ -80,7 +80,7 @@ end;
 constructor TLexer.Create;
 begin
   inherited Create;
-  LexerFile := TFile.Create;
+  LexerFile := TFile.Create();
 end;
 
 destructor TLexer.Destroy;
@@ -97,12 +97,14 @@ begin
   LexerFile.Open(AFileName);
   try
     repeat
+      
       L := MakeLexeme;
       if L.TokenType <> TT_END_OF_FILE then
         begin
           SetLength(LexerLexemes, Length(LexerLexemes) + 1);  // redimensiona o array dinâmico :contentReference[oaicite:2]{index=2}
           LexerLexemes[High(LexerLexemes)] := L;
         end
+        
     until L.TokenType = TT_END_OF_FILE;
     
   finally
@@ -116,13 +118,14 @@ var
   L: TLexeme;
   C: AnsiChar;
   State: TState;
+  symbol: TokenT;
 begin
-  L := TLexeme.Create;
+  L := TLexeme.Create();
   L.token := '';
   L.Line := LexerFile.Line;
   L.Column := LexerFile.Column;
   L.TokenType := TT_VAR_NAME;
-  C := LexerFile.Peek;
+  C := LexerFile.Peek();
   State := STATE_INITIAL;
 
   while State <> STATE_FINAL do
@@ -137,7 +140,7 @@ begin
 
         { whitespaces are skipped }
         else if C <= ' ' then
-          C := LexerFile.Advance
+          C := LexerFile.Advance()
 
         { this can be either a variable name or a keyword }
         else if IsAlpha(C) then
@@ -145,7 +148,7 @@ begin
           L.token := L.token + C;
           L.Line := LexerFile.Line;
           L.Column := LexerFile.Column;
-          C := LexerFile.Advance;
+          C := LexerFile.Advance();
           State := STATE_ALNUM;
         end
 
@@ -155,7 +158,7 @@ begin
           L.token := L.token + C;
           L.Line := LexerFile.Line;
           L.Column := LexerFile.Column;
-          C := LexerFile.Advance;
+          C := LexerFile.Advance();
           State := STATE_ZERO;
         end
 
@@ -165,7 +168,7 @@ begin
           L.token := L.token + C;
           L.Line := LexerFile.Line;
           L.Column := LexerFile.Column;
-          C := LexerFile.Advance;
+          C := LexerFile.Advance();
           State := STATE_DIGIT;
         end
 
@@ -176,7 +179,7 @@ begin
           L.token := L.token + C;
           L.Line := LexerFile.Line;
           L.Column := LexerFile.Column;
-          C := LexerFile.Advance;
+          C := LexerFile.Advance();
           State := STATE_SLASH;
         end
 
@@ -193,7 +196,7 @@ begin
           L.token := L.token + C;
           L.Line := LexerFile.Line;
           L.Column := LexerFile.Column;
-          C := LexerFile.Advance;
+          C := LexerFile.Advance();
           State := STATE_COLON;
         end
 
@@ -203,7 +206,7 @@ begin
           L.token := L.token + C;
           L.Line := LexerFile.Line;
           L.Column := LexerFile.Column;
-          C := LexerFile.Advance;
+          C := LexerFile.Advance();
           State := STATE_LESS_THAN;
         end
 
@@ -213,7 +216,7 @@ begin
           L.token := L.token + C;
           L.Line := LexerFile.Line;
           L.Column := LexerFile.Column;
-          C := LexerFile.Advance;
+          C := LexerFile.Advance();
           State := STATE_GREATER_THAN;
         end
 
@@ -224,7 +227,7 @@ begin
           L.token := L.token + C;
           L.Line := LexerFile.Line;
           L.Column := LexerFile.Column;
-          C := LexerFile.Advance;
+          C := LexerFile.Advance();
           State := STATE_EQUAL;
         end
 
@@ -235,7 +238,7 @@ begin
         begin
           L.Line := LexerFile.Line;
           L.Column := LexerFile.Column;
-          C := LexerFile.Advance;
+          C := LexerFile.Advance();
           State := STATE_STRING;
         end
         
@@ -246,7 +249,7 @@ begin
           L.Line := LexerFile.Line;
           L.Column := LexerFile.Column;
           L.TokenType := SymbolUnit.Find(L.token);
-          C := LexerFile.Advance;
+          C := LexerFile.Advance();
           State := STATE_FINAL;
         end
 
@@ -262,14 +265,19 @@ begin
         if IsAlphaNum(C) then
         begin
           L.token := L.token + C;
-          C := LexerFile.Advance;
+          C := LexerFile.Advance();
         end
 
         else
         begin
           { check if the token is in SymbolTable. if it doesn't, it's }
           { a variable name }
-          L.TokenType := SymbolUnit.Find(L.token);
+          symbol := SymbolUnit.Find(L.token);
+          if symbol <> TT_INVALID then
+            L.TokenType = symbol
+          else
+            L.TokenType := TT_IDENT;
+            
           State := STATE_FINAL;
         end;
       end;
@@ -278,19 +286,19 @@ begin
         if IsOctal(C) then
           begin
             L.token := L.token + C;
-            C := LexerFile.Advance;
+            C := LexerFile.Advance();
             State := STATE_OCTAL;
           end
         else if C = 'x' then
           begin
             L.token := L.token + C;
-            C := LexerFile.Advance;
+            C := LexerFile.Advance();
             State := STATE_HEX;
           end
         else if C = '.' then
           begin
             L.token := L.token + C;
-            C := LexerFile.Advance;
+            C := LexerFile.Advance();
             State := STATE_REAL;
           end
         else if (C = '8') or (C = '9') then
@@ -316,7 +324,7 @@ begin
         if IsOctal(C) then
           begin
             L.token := L.token + C;
-            C := LexerFile.Advance;
+            C := LexerFile.Advance();
           end
         else if (C = '8') or (C = '9') then
           begin
@@ -339,7 +347,7 @@ begin
         if IsHex(C) then
           begin
             L.token := L.token + C;
-            C := LexerFile.Advance;
+            C := LexerFile.Advance();
           end
         else if (C >= 'a') and (C <= 'f') then
             begin
@@ -362,12 +370,12 @@ begin
         if IsDigit(C) then
           begin
             L.token := L.token + C;
-            C := LexerFile.Advance;
+            C := LexerFile.Advance();
           end
         else if C = '.' then
           begin
             L.token := L.token + C;
-            C := LexerFile.Advance;
+            C := LexerFile.Advance();
             State := STATE_REAL;
           end
         else if IsAlpha(C) then
@@ -386,7 +394,7 @@ begin
         if IsDigit(C) then
           begin
             L.token := L.token + C;
-            C := LexerFile.Advance;
+            C := LexerFile.Advance();
           end
 
         else if IsAlpha(C) then
@@ -413,7 +421,7 @@ begin
         if C = '/' then
           begin
             L.token := '';
-            C := LexerFile.Advance;
+            C := LexerFile.Advance();
             State := STATE_COMMENT_SINGLE_LINE;
           end
         else
@@ -425,10 +433,10 @@ begin
 
       STATE_COMMENT_SINGLE_LINE: begin
         if (C <> #10) and (C <> #0) then
-          C := LexerFile.Advance
+          C := LexerFile.Advance()
         else
           begin
-            C := LexerFile.Advance;
+            C := LexerFile.Advance();
             State := STATE_INITIAL;
           end;
       end;
@@ -436,7 +444,7 @@ begin
       STATE_COMMENT_MULTI_LINE: begin
         if C = '}' then
           begin
-            C := LexerFile.Advance;
+            C := LexerFile.Advance();
             State := STATE_INITIAL;
           end
         else if C = #0 then
@@ -445,14 +453,14 @@ begin
               raise ELexicalError.Create(LexicalError('unexpected end of file inside comment', L));
             end
         else
-          C := LexerFile.Advance;
+          C := LexerFile.Advance();
       end;
 
       STATE_COLON: begin
         if C = '=' then
           begin
             L.token := L.token + C;
-            C := LexerFile.Advance;
+            C := LexerFile.Advance();
           end;
         L.TokenType := SymbolUnit.Find(L.token);
         State := STATE_FINAL;
@@ -462,12 +470,12 @@ begin
         if C = '=' then
           begin
             L.token := L.token + C;
-            C := LexerFile.Advance;
+            C := LexerFile.Advance();
           end
         else if C = '>' then
           begin
             L.token := L.token + C;
-            C := LexerFile.Advance;
+            C := LexerFile.Advance();
           end;
         L.TokenType := SymbolUnit.Find(L.token);
         State := STATE_FINAL;
@@ -477,7 +485,7 @@ begin
         if C = '=' then
           begin
             L.token := L.token + C;
-            C := LexerFile.Advance;
+            C := LexerFile.Advance();
           end;
         L.TokenType := SymbolUnit.Find(L.token);
         State := STATE_FINAL;
@@ -487,7 +495,7 @@ begin
         if C = '=' then
           begin
             L.token := L.token + C;
-            C := LexerFile.Advance;
+            C := LexerFile.Advance();
           end;
         L.TokenType := TT_EQUAL;
         State := STATE_FINAL;
@@ -496,7 +504,7 @@ begin
       STATE_STRING: begin
           if C = '"' then
           begin
-              C := LexerFile.Advance;
+              C := LexerFile.Advance();
               L.TokenType := TT_LITERAL_STRING;
               State := STATE_FINAL;
           end
@@ -526,13 +534,13 @@ begin
                       raise ELexicalError.Create(LexicalError('not defined escape code', L));
                     end
               end;
-              C := LexerFile.Advance;
+              C := LexerFile.Advance();
               State := STATE_STRING;
           end
           else
           begin
               L.token := L.token + C;
-              C := LexerFile.Advance;
+              C := LexerFile.Advance();
               State := STATE_STRING;
           end;
       end;      
