@@ -14,18 +14,10 @@ function Find(const Token: string): TokenT;
 implementation
 
 const
-  TableSize = 101; // a prime number bigger than the number of keywords, to reduce collisions
-
-type
-  PHashEntry = ^THashEntry;
-  THashEntry = record
-    Key: string;
-    Value: TokenT;
-  end;
+  TableSize = 101;  // a prime ≥ number of keywords
 
 var
-  HashTable: array[0..TableSize - 1] of PHashEntry;
-  cleanupIndex: Integer; 
+  Table: array[0..TableSize - 1] of TokenT;
 
 function SimpleHash(const S: string): Integer;
 var
@@ -36,105 +28,70 @@ begin
     Result := (Result * 31 + Ord(UpCase(S[i]))) mod TableSize;
 end;
 
-procedure Insert(const Key: string; Value: TokenT);
+procedure InitTable;
 var
-  Index: Integer;
+  i: Integer;
+  h: Integer;
 begin
-  Index := SimpleHash(Key);
-  while Assigned(HashTable[Index]) do
-    Index := (Index + 1) mod TableSize; 
-  New(HashTable[Index]);
-  HashTable[Index]^.Key := Key;
-  HashTable[Index]^.Value := Value;
+  for i := 0 to TableSize - 1 do
+    Table[i] := TT_INVALID;
+
+  h := SimpleHash('+');       Table[h] := TT_ADD;
+  h := SimpleHash('-');       Table[h] := TT_SUB;
+  h := SimpleHash('*');       Table[h] := TT_MUL;
+  h := SimpleHash('/');       Table[h] := TT_DIV;
+  h := SimpleHash('mod');     Table[h] := TT_MOD;
+  h := SimpleHash('div');     Table[h] := TT_FLOORDIV;
+  h := SimpleHash('or');      Table[h] := TT_OR;
+  h := SimpleHash('and');     Table[h] := TT_AND;
+  h := SimpleHash('not');     Table[h] := TT_NOT;
+  h := SimpleHash('==');      Table[h] := TT_EQL;
+  h := SimpleHash('<>');      Table[h] := TT_NEQ;
+  h := SimpleHash('>');       Table[h] := TT_GTR;
+  h := SimpleHash('>=');      Table[h] := TT_GEQ;
+  h := SimpleHash('<');       Table[h] := TT_LSS;
+  h := SimpleHash('<=');      Table[h] := TT_LEQ;
+  h := SimpleHash(':=');      Table[h] := TT_ASSIGN;
+  h := SimpleHash(';');       Table[h] := TT_SEMICOLON;
+  h := SimpleHash(',');       Table[h] := TT_COMMA;
+  h := SimpleHash('.');       Table[h] := TT_PERIOD;
+  h := SimpleHash(':');       Table[h] := TT_COLON;
+  h := SimpleHash('(');       Table[h] := TT_LPAREN;
+  h := SimpleHash(')');       Table[h] := TT_RPAREN;
+  h := SimpleHash('"');       Table[h] := TT_QUOTES;
+  h := SimpleHash('program'); Table[h] := TT_PROGRAMSYM;
+  h := SimpleHash('var');     Table[h] := TT_VARSYM;
+  h := SimpleHash('integer'); Table[h] := TT_TYPE_INT;
+  h := SimpleHash('real');    Table[h] := TT_TYPE_REAL;
+  h := SimpleHash('string');  Table[h] := TT_TYPE_STR;
+  h := SimpleHash('begin');   Table[h] := TT_BEGINSYM;
+  h := SimpleHash('end');     Table[h] := TT_ENDSYM;
+  h := SimpleHash('for');     Table[h] := TT_FORSYM;
+  h := SimpleHash('to');      Table[h] := TT_TOSYM;
+  h := SimpleHash('while');   Table[h] := TT_WHILESYM;
+  h := SimpleHash('do');      Table[h] := TT_DOSYM;
+  h := SimpleHash('break');   Table[h] := TT_BREAKSYM;
+  h := SimpleHash('continue');Table[h] := TT_CONTINUESYM;
+  h := SimpleHash('if');      Table[h] := TT_IFSYM;
+  h := SimpleHash('else');    Table[h] := TT_ELSESYM;
+  h := SimpleHash('then');    Table[h] := TT_THENSYM;
+  h := SimpleHash('write');   Table[h] := TT_WRITESYM;
+  h := SimpleHash('writeln'); Table[h] := TT_WRITELNSYM;
+  h := SimpleHash('read');    Table[h] := TT_READSYM;
+  h := SimpleHash('readln');  Table[h] := TT_READLNSYM;
 end;
 
 function Contains(const Token: string): Boolean;
-var
-  Index, StartIndex: Integer;
 begin
-  Index := SimpleHash(Token);
-  StartIndex := Index;
-  while Assigned(HashTable[Index]) do
-  begin
-    if CompareText(HashTable[Index]^.Key, Token) = 0 then
-      Exit(True);
-    Index := (Index + 1) mod TableSize;
-    if Index = StartIndex then
-      Break;
-  end;
-  Result := False;
+  Result := Table[SimpleHash(Token)] <> TT_INVALID;
 end;
 
 function Find(const Token: string): TokenT;
-var
-  Index, StartIndex: Integer;
 begin
-  Index := SimpleHash(Token);
-  StartIndex := Index;
-  while Assigned(HashTable[Index]) do
-  begin
-    if CompareText(HashTable[Index]^.Key, Token) = 0 then
-      Exit(HashTable[Index]^.Value);
-    Index := (Index + 1) mod TableSize;
-    if Index = StartIndex then
-      Break;
-  end;
-  Result := TT_VAR_NAME; // default if not found
-end;
-
-procedure InitTable;
-begin
-  Insert('+'      , TT_ADD);
-  Insert('-'      , TT_SUB);
-  Insert('*'      , TT_MUL);
-  Insert('/'      , TT_DIV);
-  Insert('mod'    , TT_MOD);
-  Insert('div'    , TT_DIVINT);
-  Insert('or'     , TT_OR);
-  Insert('and'    , TT_AND);
-  Insert('not'    , TT_NOT);
-  Insert('=='     , TT_EQUAL);
-  Insert('<>'     , TT_DIFFERENCE);
-  Insert('>'      , TT_GREATER);
-  Insert('>='     , TT_GREATER_EQUAL);
-  Insert('<'      , TT_LOWER);
-  Insert('<='     , TT_LOWER_EQUAL);
-  Insert(':='     , TT_ASSIGN);
-  Insert(';'      , TT_SEMICOLON);
-  Insert(','      , TT_COMMA);
-  Insert('.'      , TT_PERIOD);
-  Insert(':'      , TT_COLON);
-  Insert('('      , TT_OPEN_PARENTHESES);
-  Insert(')'      , TT_CLOSE_PARENTHESES);
-  Insert('"'      , TT_QUOTES);
-  Insert('program', TT_PROGRAM);
-  Insert('var'    , TT_VAR);
-  Insert('integer', TT_TYPE_INTEGER);
-  Insert('real'   , TT_TYPE_REAL);
-  Insert('string' , TT_TYPE_STRING);
-  Insert('begin'  , TT_BEGIN);
-  Insert('end'    , TT_END);
-  Insert('for'    , TT_FOR);
-  Insert('to'     , TT_TO);
-  Insert('while'  , TT_WHILE);
-  Insert('do'     , TT_DO);
-  Insert('break'  , TT_BREAK);
-  Insert('continue', TT_CONTINUE);
-  Insert('if'     , TT_IF);
-  Insert('else'   , TT_ELSE);
-  Insert('then'   , TT_THEN);
-  Insert('write'  , TT_WRITE);
-  Insert('writeln', TT_WRITELN);
-  Insert('read'   , TT_READ);
-  Insert('readln' , TT_READLN);
+  Result := Table[SimpleHash(Token)];
 end;
 
 initialization
   InitTable;
-
-finalization
-  for cleanupIndex := 0 to TableSize - 1 do
-    if Assigned(HashTable[cleanupIndex]) then
-      Dispose(HashTable[cleanupIndex]);
 
 end.
