@@ -14,10 +14,18 @@ function Find(const Token: string): TokenT;
 implementation
 
 const
-  TableSize = 101;  // a prime ≥ number of keywords
+  TableSize = 101;
+
+type
+  TEntry = record
+    Key: string;
+    Value: TokenT;
+  end;
+  TBucket = array of TEntry;
 
 var
-  Table: array[0..TableSize - 1] of TokenT;
+  Table: array[0..TableSize - 1] of TBucket;
+
 
 function SimpleHash(const S: string): Integer;
 var
@@ -29,76 +37,90 @@ begin
 end;
 
 procedure InitTable;
+const
+  Tokens: array[0..42] of record Key: string; Value: TokenT end= (
+    (Key: '+';        Value: TT_ADD),
+    (Key: '-';        Value: TT_SUB),
+    (Key: '*';        Value: TT_MUL),
+    (Key: '/';        Value: TT_DIV),
+    (Key: 'mod';      Value: TT_MOD),
+    (Key: 'div';      Value: TT_FLOORDIV),
+    (Key: 'or';       Value: TT_OR),
+    (Key: 'and';      Value: TT_AND),
+    (Key: 'not';      Value: TT_NOT),
+    (Key: '==';       Value: TT_EQL),
+    (Key: '<>';       Value: TT_NEQ),
+    (Key: '>';        Value: TT_GTR),
+    (Key: '>=';       Value: TT_GEQ),
+    (Key: '<';        Value: TT_LSS),
+    (Key: '<=';       Value: TT_LEQ),
+    (Key: ':=';       Value: TT_ASSIGN),
+    (Key: ';';        Value: TT_SEMICOLON),
+    (Key: ',';        Value: TT_COMMA),
+    (Key: '.';        Value: TT_PERIOD),
+    (Key: ':';        Value: TT_COLON),
+    (Key: '(';        Value: TT_LPAREN),
+    (Key: ')';        Value: TT_RPAREN),
+    (Key: '"';       Value: TT_QUOTES),
+    (Key: 'program';  Value: TT_PROGRAM),
+    (Key: 'var';      Value: TT_VAR),
+    (Key: 'integer';  Value: TT_TYPE_INT),
+    (Key: 'real';     Value: TT_TYPE_REAL),
+    (Key: 'string';   Value: TT_TYPE_STR),
+    (Key: 'begin';    Value: TT_BEGIN),
+    (Key: 'end';      Value: TT_END),
+    (Key: 'for';      Value: TT_FOR),
+    (Key: 'to';       Value: TT_TO),
+    (Key: 'while';    Value: TT_WHILE),
+    (Key: 'do';       Value: TT_DO),
+    (Key: 'break';    Value: TT_BREAK),
+    (Key: 'continue'; Value: TT_CONTINUE),
+    (Key: 'if';       Value: TT_IF),
+    (Key: 'else';     Value: TT_ELSE),
+    (Key: 'then';     Value: TT_THEN),
+    (Key: 'write';     Value: TT_WRITE),
+    (Key: 'writeln';     Value: TT_WRITELN),
+    (Key: 'read';     Value: TT_READ),
+    (Key: 'readln';     Value: TT_READLN)
+  );
 var
-  i: Integer;
-  h: Integer;
+  i, idx: Integer;
 begin
+  // Clear buckets
   for i := 0 to TableSize - 1 do
-    Table[i] := TT_INVALID;
+    SetLength(Table[i], 0);
 
-  // Arithmetic operators
-  h := SimpleHash('+');       Table[h] := TT_ADD;
-  h := SimpleHash('-');       Table[h] := TT_SUB;
-  h := SimpleHash('*');       Table[h] := TT_MUL;
-  h := SimpleHash('/');       Table[h] := TT_DIV;
-  h := SimpleHash('mod');     Table[h] := TT_MOD;
-  h := SimpleHash('div');     Table[h] := TT_FLOORDIV;
-
-  // Logical, relational operators and assignments
-  h := SimpleHash('or');      Table[h] := TT_OR;
-  h := SimpleHash('and');     Table[h] := TT_AND;
-  h := SimpleHash('not');     Table[h] := TT_NOT;
-  h := SimpleHash('==');      Table[h] := TT_EQL;
-  h := SimpleHash('<>');      Table[h] := TT_NEQ;
-  h := SimpleHash('>');       Table[h] := TT_GTR;
-  h := SimpleHash('>=');      Table[h] := TT_GEQ;
-  h := SimpleHash('<');       Table[h] := TT_LSS;
-  h := SimpleHash('<=');      Table[h] := TT_LEQ;
-  h := SimpleHash(':=');      Table[h] := TT_ASSIGN;
-
-  // Symbols
-  h := SimpleHash(';');       Table[h] := TT_SEMICOLON;
-  h := SimpleHash(',');       Table[h] := TT_COMMA;
-  h := SimpleHash('.');       Table[h] := TT_PERIOD;
-  h := SimpleHash(':');       Table[h] := TT_COLON;
-  h := SimpleHash('(');       Table[h] := TT_LPAREN;
-  h := SimpleHash(')');       Table[h] := TT_RPAREN;
-  h := SimpleHash('"');       Table[h] := TT_QUOTES;
-
-  // Keywords
-  h := SimpleHash('program'); Table[h] := TT_PROGRAM;
-  h := SimpleHash('var');     Table[h] := TT_VAR;
-  h := SimpleHash('integer'); Table[h] := TT_TYPE_INT;
-  h := SimpleHash('real');    Table[h] := TT_TYPE_REAL;
-  h := SimpleHash('string');  Table[h] := TT_TYPE_STR;
-  h := SimpleHash('begin');   Table[h] := TT_BEGIN;
-  h := SimpleHash('end');     Table[h] := TT_END;
-  h := SimpleHash('for');     Table[h] := TT_FOR;
-  h := SimpleHash('to');      Table[h] := TT_TO;
-  h := SimpleHash('while');   Table[h] := TT_WHILE;
-  h := SimpleHash('do');      Table[h] := TT_DO;
-  h := SimpleHash('break');   Table[h] := TT_BREAK;
-  h := SimpleHash('continue');Table[h] := TT_CONTINUE;
-  h := SimpleHash('if');      Table[h] := TT_IF;
-  h := SimpleHash('else');    Table[h] := TT_ELSE;
-  h := SimpleHash('then');    Table[h] := TT_THEN;
-  h := SimpleHash('write');   Table[h] := TT_WRITE;
-  h := SimpleHash('writeln'); Table[h] := TT_WRITELN;
-  h := SimpleHash('read');    Table[h] := TT_READ;
-  h := SimpleHash('readln');  Table[h] := TT_READLN;
+  // Insert each token into its bucket
+  for i := Low(Tokens) to High(Tokens) do
+  begin
+    idx := SimpleHash(Tokens[i].Key);
+    SetLength(Table[idx], Length(Table[idx]) + 1);
+    Table[idx][High(Table[idx])].Key := Tokens[i].Key;
+    Table[idx][High(Table[idx])].Value := Tokens[i].Value;
+  end;
 end;
 
 function Contains(const Token: string): Boolean;
 begin
-  Result := Table[SimpleHash(Token)] <> TT_INVALID;
+  Result := Find(Token) <> TT_INVALID;
 end;
 
 function Find(const Token: string): TokenT;
+var
+  bucket: TBucket;
+  e: TEntry;
+  hashVal: Integer;
 begin
-  Result := Table[SimpleHash(Token)];
+
+  hashVal := SimpleHash(Token);
+  bucket := Table[hashVal];
+  for e in bucket do
+    if SameText(e.Key, Token) then
+      Exit(e.Value);
+  Result := TT_INVALID;
 end;
+
 
 initialization
   InitTable;
-
 end.

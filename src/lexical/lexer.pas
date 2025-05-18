@@ -581,7 +581,7 @@ end;
 function TLexer.LexicalError(const Msg: string; var L: TLexeme): string;
 begin
   Result := Format(
-    'Lexical error at line %d, column %d: %s  (token so far: "%s")',
+    'error at line %d, column %d: %s  (token so far: "%s")',
     [L.line, L.Column, Msg, L.token]
   );
 end;

@@ -42,13 +42,12 @@ begin
     end;
   except
     on E: ELexicalError do
-      WriteLn('Error: ', E.Message);
+      WriteLn('Lexical Error: ', E.Message);
     on E: ESyntaticalError do
-          WriteLn('Error: ', E.Message);
+          WriteLn('Syntatic Error: ', E.Message);
     on E: Exception do
       WriteLn('Error: ', E.ClassName, ': ', E.Message);
   end;
 end.
-
 
 
