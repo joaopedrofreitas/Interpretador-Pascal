@@ -2,7 +2,6 @@ program sum;
 
 var
   num1, num2, sum: integer;
-  r: real = 3.;
 
 begin
   write ("Insert number 1: ");
