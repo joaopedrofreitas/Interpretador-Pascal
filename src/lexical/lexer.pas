@@ -242,8 +242,9 @@ begin
           State := STATE_STRING;
         end
         
+        { '+', '-', '*', ';', ',', '.', '(', ')' }
         { check if 'c' is one of those symbols }
-        else if C in ['+','-','*',';',',','.','(',')'] then
+        else if ((Ord(C) >= 40) and (Ord(C) <= 46)) or (Ord(C) = 59) then
         begin
           L.token := L.token + C;
           L.Line := LexerFile.Line;
