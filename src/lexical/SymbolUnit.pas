@@ -36,12 +36,15 @@ begin
   for i := 0 to TableSize - 1 do
     Table[i] := TT_INVALID;
 
+  // Arithmetic operators
   h := SimpleHash('+');       Table[h] := TT_ADD;
   h := SimpleHash('-');       Table[h] := TT_SUB;
   h := SimpleHash('*');       Table[h] := TT_MUL;
   h := SimpleHash('/');       Table[h] := TT_DIV;
   h := SimpleHash('mod');     Table[h] := TT_MOD;
   h := SimpleHash('div');     Table[h] := TT_FLOORDIV;
+
+  // Logical, relational operators and assignments
   h := SimpleHash('or');      Table[h] := TT_OR;
   h := SimpleHash('and');     Table[h] := TT_AND;
   h := SimpleHash('not');     Table[h] := TT_NOT;
@@ -52,6 +55,8 @@ begin
   h := SimpleHash('<');       Table[h] := TT_LSS;
   h := SimpleHash('<=');      Table[h] := TT_LEQ;
   h := SimpleHash(':=');      Table[h] := TT_ASSIGN;
+
+  // Symbols
   h := SimpleHash(';');       Table[h] := TT_SEMICOLON;
   h := SimpleHash(',');       Table[h] := TT_COMMA;
   h := SimpleHash('.');       Table[h] := TT_PERIOD;
@@ -59,26 +64,28 @@ begin
   h := SimpleHash('(');       Table[h] := TT_LPAREN;
   h := SimpleHash(')');       Table[h] := TT_RPAREN;
   h := SimpleHash('"');       Table[h] := TT_QUOTES;
-  h := SimpleHash('program'); Table[h] := TT_PROGRAMSYM;
-  h := SimpleHash('var');     Table[h] := TT_VARSYM;
+
+  // Keywords
+  h := SimpleHash('program'); Table[h] := TT_PROGRAM;
+  h := SimpleHash('var');     Table[h] := TT_VAR;
   h := SimpleHash('integer'); Table[h] := TT_TYPE_INT;
   h := SimpleHash('real');    Table[h] := TT_TYPE_REAL;
   h := SimpleHash('string');  Table[h] := TT_TYPE_STR;
-  h := SimpleHash('begin');   Table[h] := TT_BEGINSYM;
-  h := SimpleHash('end');     Table[h] := TT_ENDSYM;
-  h := SimpleHash('for');     Table[h] := TT_FORSYM;
-  h := SimpleHash('to');      Table[h] := TT_TOSYM;
-  h := SimpleHash('while');   Table[h] := TT_WHILESYM;
-  h := SimpleHash('do');      Table[h] := TT_DOSYM;
-  h := SimpleHash('break');   Table[h] := TT_BREAKSYM;
-  h := SimpleHash('continue');Table[h] := TT_CONTINUESYM;
-  h := SimpleHash('if');      Table[h] := TT_IFSYM;
-  h := SimpleHash('else');    Table[h] := TT_ELSESYM;
-  h := SimpleHash('then');    Table[h] := TT_THENSYM;
-  h := SimpleHash('write');   Table[h] := TT_WRITESYM;
-  h := SimpleHash('writeln'); Table[h] := TT_WRITELNSYM;
-  h := SimpleHash('read');    Table[h] := TT_READSYM;
-  h := SimpleHash('readln');  Table[h] := TT_READLNSYM;
+  h := SimpleHash('begin');   Table[h] := TT_BEGIN;
+  h := SimpleHash('end');     Table[h] := TT_END;
+  h := SimpleHash('for');     Table[h] := TT_FOR;
+  h := SimpleHash('to');      Table[h] := TT_TO;
+  h := SimpleHash('while');   Table[h] := TT_WHILE;
+  h := SimpleHash('do');      Table[h] := TT_DO;
+  h := SimpleHash('break');   Table[h] := TT_BREAK;
+  h := SimpleHash('continue');Table[h] := TT_CONTINUE;
+  h := SimpleHash('if');      Table[h] := TT_IF;
+  h := SimpleHash('else');    Table[h] := TT_ELSE;
+  h := SimpleHash('then');    Table[h] := TT_THEN;
+  h := SimpleHash('write');   Table[h] := TT_WRITE;
+  h := SimpleHash('writeln'); Table[h] := TT_WRITELN;
+  h := SimpleHash('read');    Table[h] := TT_READ;
+  h := SimpleHash('readln');  Table[h] := TT_READLN;
 end;
 
 function Contains(const Token: string): Boolean;

@@ -30,26 +30,26 @@ type
     TT_ASSIGN,             { := }
 
     { Keywords }
-    TT_PROGRAMSYM,         { program }
-    TT_VARSYM,             { var }
+    TT_PROGRAM,         { program }
+    TT_VAR,             { var }
     TT_TYPE_INT,       { integer }
     TT_TYPE_REAL,          { real }
     TT_TYPE_STR,        { string }
-    TT_BEGINSYM,           { begin }
-    TT_ENDSYM,             { end }
-    TT_FORSYM,             { for }
-    TT_TOSYM,              { to }
-    TT_WHILESYM,           { while }
-    TT_DOSYM,              { do }
-    TT_BREAKSYM,           { break }
-    TT_CONTINUESYM,        { continue }
-    TT_IFSYM,              { if }
-    TT_ELSESYM,            { else }
-    TT_THENSYM,            { then }
-    TT_WRITESYM,           { write }
-    TT_WRITELNSYM,         { writeln }
-    TT_READSYM,            { read }
-    TT_READLNSYM,          { readln }
+    TT_BEGIN,           { begin }
+    TT_END,             { end }
+    TT_FOR,             { for }
+    TT_TO,              { to }
+    TT_WHILE,           { while }
+    TT_DO,              { do }
+    TT_BREAK,           { break }
+    TT_CONTINUE,        { continue }
+    TT_IF,              { if }
+    TT_ELSE,            { else }
+    TT_THEN,            { then }
+    TT_WRITE,           { write }
+    TT_WRITELN,         { writeln }
+    TT_READ,            { read }
+    TT_READLN,          { readln }
 
     { Symbols }
     TT_SEMICOLON,          { ; }
@@ -101,26 +101,26 @@ begin
     TT_ASSIGN:            tt2str := 'ASSIGN';
 
     { Keywords }
-    TT_PROGRAMSYM:        tt2str := 'PROGRAMSYM';
-    TT_VARSYM:            tt2str := 'VARSYM';
+    TT_PROGRAM:           tt2str := 'PROGRAM';
+    TT_VAR:               tt2str := 'VAR';
     TT_TYPE_INT:          tt2str := 'TYPE_INTEGER';
     TT_TYPE_REAL:         tt2str := 'TYPE_REAL';
     TT_TYPE_STR:          tt2str := 'TYPE_STRING';
-    TT_BEGINSYM:          tt2str := 'BEGINSYM';
-    TT_ENDSYM:            tt2str := 'ENDSYM';
-    TT_FORSYM:            tt2str := 'FORSYM';
-    TT_TOSYM:             tt2str := 'TOSYM';
-    TT_WHILESYM:          tt2str := 'WHILESYM';
-    TT_DOSYM:             tt2str := 'DOSYM';
-    TT_BREAKSYM:          tt2str := 'BREAKSYM';
-    TT_CONTINUESYM:       tt2str := 'CONTINUESYM';
-    TT_IFSYM:             tt2str := 'IFSYM';
-    TT_ELSESYM:           tt2str := 'ELSESYM';
-    TT_THENSYM:           tt2str := 'THENSYM';
-    TT_WRITESYM:          tt2str := 'WRITESYM';
-    TT_WRITELNSYM:        tt2str := 'WRITELNSYM';
-    TT_READSYM:           tt2str := 'READSYM';
-    TT_READLNSYM:         tt2str := 'READLNSYM';
+    TT_BEGIN:             tt2str := 'BEGIN';
+    TT_END:               tt2str := 'END';
+    TT_FOR:               tt2str := 'FOR';
+    TT_TO:                tt2str := 'TO';
+    TT_WHILE:             tt2str := 'WHILE';
+    TT_DO:                tt2str := 'DO';
+    TT_BREAK:             tt2str := 'BREAK';
+    TT_CONTINUE:          tt2str := 'CONTINUE';
+    TT_IF:                tt2str := 'IF';
+    TT_ELSE:              tt2str := 'ELSE';
+    TT_THEN:              tt2str := 'THEN';
+    TT_WRITE:             tt2str := 'WRITE';
+    TT_WRITELN:           tt2str := 'WRITELN';
+    TT_READ:              tt2str := 'READ';
+    TT_READLN:            tt2str := 'READLN';
 
     { Symbols }
     TT_SEMICOLON:         tt2str := 'SEMICOLON';

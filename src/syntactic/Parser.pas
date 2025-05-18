@@ -109,13 +109,13 @@ end;
 // <function*> -> 'program' 'IDENT' ';' <declarations> 'begin' <stmtList> 'end' '.' ;
 procedure TParser.proc_function;
 begin
-    consume(TT_PROGRAMSYM);
+    consume(TT_PROGRAM);
     consume(TT_IDENT);
     consume(TT_SEMICOLON);
     proc_declarations;
-    consume(TT_BEGINSYM);
+    consume(TT_BEGIN);
     proc_stmtList;
-    consume(TT_ENDSYM);
+    consume(TT_END);
     consume(TT_PERIOD);
 end;
 
@@ -126,7 +126,7 @@ end;
 // <declarations> -> var <declaration> <restDeclaration> ;
 procedure TParser.proc_declarations;
 begin
-    consume(TT_VARSYM);
+    consume(TT_VAR);
     proc_declaration;
     proc_restDeclaration;
 end;
@@ -189,9 +189,9 @@ end;
 // <block> -> 'begin' <stmtList> 'end' ';' ;
 procedure TParser.proc_block;
 begin
-    consume(TT_BEGINSYM);
+    consume(TT_BEGIN);
     proc_stmtList;
-    consume(TT_ENDSYM);
+    consume(TT_END);
     consume(TT_SEMICOLON);
 end;
 
@@ -199,8 +199,8 @@ end;
 procedure TParser.proc_stmtList;
 begin
     case current_lexeme.type of
-            TT_FORSYM, TT_READSYM, TT_WRITESYM, TT_READLNSYM, TT_WRITELNSYM,
-            TT_WHILESYM, TT_IDENT, TT_IFSYM, TT_BEGINSYM, TT_BREAKSYM, TT_CONTINUESYM, TT_SEMICOLON:
+            TT_FOR, TT_READ, TT_WRITE, TT_READLN, TT_WRITELN,
+            TT_WHILE, TT_IDENT, TT_IF, TT_BEGIN, TT_BREAK, TT_CONTINUE, TT_SEMICOLON:
     begin
         proc_stmt;
         proc_stmtList;
@@ -219,11 +219,11 @@ end;
 procedure TParser.proc_stmt;
 begin
     case current_lexeme.type of
-        TT_FORSYM: proc_forStmt;
+        TT_FOR: proc_forStmt;
 
-        TT_READSYM, TT_WRITESYM, TT_READLNSYM, TT_WRITELNSYM: proc_ioStmt;
+        TT_READ, TT_WRITE, TT_READLN, TT_WRITELN: proc_ioStmt;
 
-        TT_WHILESYM: proc_whileStmt;
+        TT_WHILE: proc_whileStmt;
 
         TT_IDENT: 
         begin
@@ -231,19 +231,19 @@ begin
             consume(TT_SEMICOLON);
         end;
 
-        TT_IFSYM: proc_ifStmt;
+        TT_IF: proc_ifStmt;
 
-        TT_BEGINSYM: proc_block;
+        TT_BEGIN: proc_block;
 
-        TT_BREAKSYM: 
+        TT_BREAK: 
         begin
-            consume(TT_BREAKSYM);
+            consume(TT_BREAK);
             consume(TT_SEMICOLON);
         end;
 
-        TT_CONTINUESYM: 
+        TT_CONTINUE: 
         begin
-            consume(TT_CONTINUESYM);
+            consume(TT_CONTINUE);
             consume(TT_SEMICOLON);
         end;
 
@@ -264,11 +264,11 @@ end;
 // <forStmt> -> 'for' <atrib> 'to' <endFor> 'do' <stmt> ;
 procedure TParser.proc_forStmt;
 begin
-    consume(TT_FORSYM);
+    consume(TT_FOR);
     proc_atrib;
-    consume(TT_TOSYM);
+    consume(TT_TO);
     proc_endFor;
-    consume(TT_DOSYM);
+    consume(TT_DO);
     proc_stmt;
 end;
 
@@ -295,36 +295,36 @@ end;
 procedure TParser.proc_ioStmt;
 begin
     case current_lexeme.type of
-        TT_READSYM: 
+        TT_READ: 
         begin
-            consume(TT_READSYM);
+            consume(TT_READ);
             consume(TT_LPAREN);
             consume(TT_IDENT);
             consume(TT_RPAREN);
             consume(TT_SEMICOLON);
         end;
 
-        TT_WRITESYM: 
+        TT_WRITE: 
         begin
-            consume(TT_WRITESYM);
+            consume(TT_WRITE);
             consume(TT_LPAREN);
             proc_outList;
             consume(TT_RPAREN);
             consume(TT_SEMICOLON);
         end;
 
-        TT_READLNSYM: 
+        TT_READLN: 
         begin
-            consume(TT_READLNSYM);
+            consume(TT_READLN);
             consume(TT_LPAREN);
             consume(TT_IDENT);
             consume(TT_RPAREN);
             consume(TT_SEMICOLON);
         end;
 
-        TT_WRITELNSYM: 
+        TT_WRITELN: 
         begin
-            consume(TT_WRITELNSYM);
+            consume(TT_WRITELN);
             consume(TT_LPAREN);
             proc_outList;
             consume(TT_RPAREN);
@@ -372,9 +372,9 @@ end;
 // <whileStmt> -> 'while' <expr> 'do' <stmt> ;
 procedure TParser.proc_whileStmt;
 begin
-    consume(TT_WHILESYM);
+    consume(TT_WHILE);
     proc_expr;
-    consume(TT_DOSYM);
+    consume(TT_DO);
     proc_stmt;
 end;
 
@@ -383,9 +383,9 @@ end;
 // <ifStmt> -> 'if' <expr> 'then' <stmt> <elsePart> ;
 procedure TParser.proc_ifStmt;
 begin
-    consume(TT_IFSYM);
+    consume(TT_IF);
     proc_expr;
-    consume(TT_THENSYM);
+    consume(TT_THEN);
     proc_stmt;
     proc_elsePart;
 end;
@@ -393,12 +393,12 @@ end;
 // <elsePart> -> 'else' <stmt> | & ;
 procedure TParser.proc_elsePart;
 begin
-    if current_lexeme.type = TT_ELSESYM then
+    if current_lexeme.type = TT_ELSE then
     begin
-        consume(TT_ELSESYM);
+        consume(TT_ELSE);
 
         case current_lexeme.type of
-                TT_FORSYM, TT_WHILESYM, TT_IDENT, TT_IFSYM, TT_BEGINSYM, TT_BREAKSYM, TT_CONTINUESYM, TT_SEMICOLON:
+                TT_FOR, TT_WHILE, TT_IDENT, TT_IF, TT_BEGIN, TT_BREAK, TT_CONTINUE, TT_SEMICOLON:
             proc_stmt;
 
         // TODO: jogar um erro namoral aqui
