@@ -333,7 +333,10 @@ begin
             consume(TT_RPAREN);
             consume(TT_SEMICOLON);
         end;
-    end;
+    
+    // TODO: jogar um erro namoral aqui
+    else
+        raise Exception.Create('DEU PAU: ' + current_lexeme.str);
 end;
 
 // <outList> -> <out><restoOutList>;
@@ -367,7 +370,10 @@ begin
         TT_LITERAL_DEC: consume(TT_LITERAL_DEC);
         TT_LITERAL_HEX: consume(TT_LITERAL_HEX);
         TT_LITERAL_REAL: consume(TT_LITERAL_REAL);
-    end;
+
+    // TODO: jogar um erro namoral aqui
+    else
+        raise Exception.Create('DEU PAU: ' + current_lexeme.str);
 end;
 
 // while command
