@@ -14,7 +14,7 @@ type
     TParser = class
     private
         m_lexemes: TLexemeArray;
-        m_pos: Integer;
+        m_pos: INtEgEr;
         function current_lexeme: TLexeme;
         procedure consume(expected: TokenT);
 
@@ -643,6 +643,8 @@ begin
         TT_LITERAL_DEC: consume(TT_LITERAL_DEC);
 
         TT_LITERAL_HEX: consume(TT_LITERAL_HEX);
+
+        TT_LITERAL_REAL: consume(TT_LITERAL_REAL);
 
         TT_IDENT: consume(TT_IDENT);
 

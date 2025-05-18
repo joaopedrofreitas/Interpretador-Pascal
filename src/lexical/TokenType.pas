@@ -74,7 +74,7 @@ function tt2str(token: TokenT): string;
 
 implementation
 
-function tt2str(token: TokenT): string;
+function tt2str(token: TokenT): String;
 begin
   case token of
     { Special }

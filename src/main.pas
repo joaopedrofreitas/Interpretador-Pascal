@@ -10,7 +10,7 @@ uses
 
 var
   lexemes: TLexemeArray;
-  i: Integer;
+  i: INTEGER;
   lex: TLexeme;
   L: TLexer;
   P: TParser;

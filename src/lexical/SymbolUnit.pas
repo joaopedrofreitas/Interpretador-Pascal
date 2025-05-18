@@ -8,7 +8,7 @@ uses
   SysUtils,
   TokenType;
 
-function Contains(const Token: string): Boolean;
+function Contains(const Token: String): Boolean;
 function Find(const Token: string): TokenT;
 
 implementation
@@ -33,7 +33,7 @@ var
 begin
   Result := 0;
   for i := 1 to Length(S) do
-    Result := (Result * 31 + Ord(UpCase(S[i]))) mod TableSize;
+    Result := (Result * 31 + Ord(S[i])) mod TableSize;
 end;
 
 procedure InitTable;
