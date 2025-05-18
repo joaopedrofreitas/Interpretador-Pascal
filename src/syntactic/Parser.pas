@@ -653,7 +653,7 @@ begin
         TT_LITERAL_STR: consume(TT_LITERAL_STR);
 
     else
-        raise ESyntaticalError.Create('invalid fator: ' + current_lexeme.str);
+        raise ESyntaticalError.Create('invalid fator in evaluating expression: ' + current_lexeme.str);
     end;
 end;
 
