@@ -282,7 +282,6 @@ begin
         TT_LITERAL_DEC: consume(TT_LITERAL_DEC);
         TT_LITERAL_HEX: consume(TT_LITERAL_HEX);
 
-    // TODO: jogar um erro namoral aqui
     else
         raise ESyntaticalError.Create('expected variable or literal value, found: ' + current_lexeme.str);
     end;
@@ -369,7 +368,6 @@ begin
         TT_LITERAL_HEX: consume(TT_LITERAL_HEX);
         TT_LITERAL_REAL: consume(TT_LITERAL_REAL);
 
-{  // TODO: jogar um erro namoral aqui}
     else
         raise ESyntaticalError.Create('invalid output information, expected string, variable or number: ' + current_lexeme.str);
     end;
@@ -409,7 +407,6 @@ begin
                 TT_FOR, TT_WHILE, TT_IDENT, TT_IF, TT_BEGIN, TT_BREAK, TT_CONTINUE, TT_SEMICOLON:
             proc_stmt;
 
-        // TODO: jogar um erro namoral aqui
         else
             raise ESyntaticalError.Create('invalid else statment: ' + current_lexeme.str);
         end;
@@ -655,7 +652,6 @@ begin
 
         TT_LITERAL_STR: consume(TT_LITERAL_STR);
 
-    // TODO: jogar um erro namoral aqui
     else
         raise ESyntaticalError.Create('invalid fator: ' + current_lexeme.str);
     end;
