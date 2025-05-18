@@ -517,20 +517,11 @@ begin
 
       STATE_EQUAL: begin
         if C = '=' then
-<<<<<<< HEAD
           begin
             L.token := L.token + C;
             C := LexerFile.Advance();
           end;
         L.TokenType := TT_EQL;
-=======
-        begin
-          L.token := L.token + C;
-          C := LexerFile.Advance();
-        end;
-
-        L.TokenType := TT_EQUAL;
->>>>>>> refs/remotes/origin/master
         State := STATE_FINAL;
       end;
              

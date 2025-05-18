@@ -99,7 +99,7 @@ begin
         Inc(m_pos)
 
     else
-        raise Exception.Create('Syntactic error -> expected ' + tt2str(expected) +
+        raise ESyntaticalError.Create('Syntactic error -> expected ' + tt2str(expected) +
                             ', found ' + tt2str(current_lexeme.type) +
                             #10 + 'line: ' + IntToStr(current_lexeme.line) +
                             #10 + 'column: ' + IntToStr(current_lexeme.column));
@@ -181,7 +181,7 @@ begin
 
     // TODO: jogar um erro namoral aqui
     else
-        raise Exception.Create('DEU PAU 1: ' + current_lexeme.str);
+        raise ESyntaticalError.Create('Expected integer, real or string: ' + current_lexeme.str);
     end;
 end;
 
@@ -254,7 +254,7 @@ begin
 
         // TODO: jogar um erro namoral aqui
         else
-            raise Exception.Create('DEU PAU 3: ' + current_lexeme.str);
+            raise ESyntaticalError.Create('DEU PAU 3: ' + current_lexeme.str);
     end;
 end;
 
@@ -286,7 +286,7 @@ begin
 
     // TODO: jogar um erro namoral aqui
     else
-        raise Exception.Create('DEU PAU 4: ' + current_lexeme.str);
+        raise ESyntaticalError.Create('DEU PAU 4: ' + current_lexeme.str);
     end;
 end;
 
@@ -336,7 +336,7 @@ begin
     
     // TODO: jogar um erro namoral aqui
     else
-        raise Exception.Create('DEU PAU: ' + current_lexeme.str);
+        raise ESyntaticalError.Create('DEU PAU: ' + current_lexeme.str);
 end;
 
 // <outList> -> <out><restoOutList>;
@@ -373,7 +373,7 @@ begin
 
     // TODO: jogar um erro namoral aqui
     else
-        raise Exception.Create('DEU PAU: ' + current_lexeme.str);
+        raise ESyntaticalError.Create('DEU PAU: ' + current_lexeme.str);
 end;
 
 // while command
@@ -412,7 +412,7 @@ begin
 
         // TODO: jogar um erro namoral aqui
         else
-            raise Exception.Create('DEU PAU 5: ' + current_lexeme.str);
+            raise ESyntaticalError.Create('DEU PAU 5: ' + current_lexeme.str);
         end;
     end;
 end;
@@ -652,7 +652,7 @@ begin
 
     // TODO: jogar um erro namoral aqui
     else
-        raise Exception.Create('DEU PAU 6: ' + current_lexeme.str);
+        raise ESyntaticalError.Create('DEU PAU 6: ' + current_lexeme.str);
     end;
 end;
 
