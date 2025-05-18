@@ -124,7 +124,7 @@ begin
   L.token := '';
   L.Line := LexerFile.Line;
   L.Column := LexerFile.Column;
-  L.TokenType := TT_VARSYM;
+  L.TokenType := TT_EOF;
   C := LexerFile.Peek();
   State := STATE_INITIAL;
 
@@ -276,8 +276,7 @@ begin
           symbol := SymbolUnit.Find(L.token);
 
           if symbol <> TT_INVALID then
-            L.TokenType = symbol
-
+            L.TokenType := symbol
           else
             L.TokenType := TT_IDENT;
             
@@ -323,7 +322,7 @@ begin
 
         else
         begin
-          L.TokenType := TT_LITERAL_DECIMAL;
+          L.TokenType := TT_LITERAL_DEC;
           State := STATE_FINAL;
         end;
       end;
@@ -349,7 +348,7 @@ begin
 
         else
         begin
-          L.TokenType := TT_LITERAL_OCTAL;
+          L.TokenType := TT_LITERAL_OCT;
           State := STATE_FINAL;
         end;
       end;
@@ -402,7 +401,7 @@ begin
 
         else
         begin
-          L.TokenType := TT_LITERAL_DECIMAL;
+          L.TokenType := TT_LITERAL_DEC;
           State := STATE_FINAL;
         end;
       end;
@@ -530,7 +529,7 @@ begin
         if C = '"' then
         begin
           C := LexerFile.Advance();
-          L.TokenType := TT_LITERAL_STRING;
+          L.TokenType := TT_LITERAL_STR;
           State := STATE_FINAL;
         end
 

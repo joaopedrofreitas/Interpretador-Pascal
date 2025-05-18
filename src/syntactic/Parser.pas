@@ -13,37 +13,37 @@ type
 
     TParser = class
     private
-        m_lexemes: TArray<TLexeme>;
+        m_lexemes: TLexemeArray;
         m_pos: Integer;
         function current_lexeme: TLexeme;
-        procedure consume(expected: TTokenType);
+        procedure consume(expected: TokenT);
 
-        // ------------------------------------
-        //  main function
-        // ------------------------------------
+    {------------------------------------}
+    {main function}
+    {------------------------------------}
         procedure proc_function;
-        // ------------------------------------
-        //  variable declarations
-        // ------------------------------------
+    {------------------------------------}
+    {variable declarations}
+    {------------------------------------}
         procedure proc_declarations;
         procedure proc_declaration;
         procedure proc_listIdent;
         procedure proc_restIdentList;
         procedure proc_restDeclaration;
         procedure proc_type;
-        // ------------------------------------
-        //  program statements
-        // ------------------------------------
+    {------------------------------------}
+    {program statements}
+    {------------------------------------}
         procedure proc_block;
         procedure proc_stmtList;
         procedure proc_stmt;
-        // ---------------------------
-        //  statement descriptions
-        // ---------------------------
-        // for command
+    {---------------------------}
+    {statement descriptions}
+    {---------------------------}
+    {for command}
         procedure proc_forStmt;
         procedure proc_endFor;
-        // IO commands
+    {IO commands}
         procedure proc_ioStmt;
         procedure proc_outList;
         procedure proc_restoOutList;
@@ -51,9 +51,9 @@ type
         procedure proc_whileStmt;
         procedure proc_ifStmt;
         procedure proc_elsePart;
-        // ------------------------------
-        //  expressions
-        // ------------------------------
+    {------------------------------}
+    {expressions}
+    {------------------------------}
         procedure proc_atrib;
         procedure proc_expr;
         procedure proc_or;
@@ -71,13 +71,13 @@ type
         procedure proc_fator;
 
     public
-        constructor Create(lexemes: TArray<TLexeme>);
+        constructor Create(lexemes: TLexemeArray);
         procedure Start;
     end;
 
 implementation
 
-constructor TParser.Create(lexemes: TArray<TLexeme>);
+constructor TParser.Create(lexemes: TLexemeArray);
 begin
     m_lexemes := lexemes;
     m_pos := 0;
@@ -93,23 +93,23 @@ begin
     Result := m_lexemes[m_pos];
 end;
 
-procedure TParser.consume(expected: TTokenType);
+procedure TParser.consume(expected: TokenT);
 begin
-    if expected = current_lexeme.type then
+    if expected = current_lexeme().TokenType then
         Inc(m_pos)
 
     else
         raise ESyntaticalError.Create('Syntactic error -> expected ' + tt2str(expected) +
-                            ', found ' + tt2str(current_lexeme.type) +
+                            ', found ' + tt2str(current_lexeme().TokenType) +
                             #10 + 'line: ' + IntToStr(current_lexeme.line) +
                             #10 + 'column: ' + IntToStr(current_lexeme.column));
 end;
 
-// ------------------------------------
-//  main function
-// ------------------------------------
+{ ------------------------------------}
+{  main function}
+{ ------------------------------------}
 
-// <function*> -> 'program' 'IDENT' ';' <declarations> 'begin' <stmtList> 'end' '.' ;
+{ <function*> -> 'program' 'IDENT' ';' <declarations> 'begin' <stmtList> 'end' '.' ;}
 procedure TParser.proc_function;
 begin
     consume(TT_PROGRAM);
@@ -122,11 +122,11 @@ begin
     consume(TT_PERIOD);
 end;
 
-// ------------------------------------
-//  variable declarations
-// ------------------------------------
+{ ------------------------------------}
+{  variable declarations}
+{ ------------------------------------}
 
-// <declarations> -> var <declaration> <restDeclaration> ;
+{ <declarations> -> var <declaration> <restDeclaration> ;}
 procedure TParser.proc_declarations;
 begin
     consume(TT_VAR);
@@ -134,7 +134,7 @@ begin
     proc_restDeclaration;
 end;
 
-// <declaration> -> <listIdent> ':' <type> ';' ;
+{ <declaration> -> <listIdent> ':' <type> ';' ;}
 procedure TParser.proc_declaration;
 begin
     proc_listIdent;
@@ -143,17 +143,17 @@ begin
     consume(TT_SEMICOLON);
 end;
 
-// <listIdent> -> 'IDENT' <restIdentList> ;
+{ <listIdent> -> 'IDENT' <restIdentList> ;}
 procedure TParser.proc_listIdent;
 begin
     consume(TT_IDENT);
     proc_restIdentList;
 end;
 
-// <restIdentList> -> ',' 'IDENT' <restIdentList> | & ;
+{ <restIdentList> -> ',' 'IDENT' <restIdentList> | & ;}
 procedure TParser.proc_restIdentList;
 begin
-    if current_lexeme.type = TT_COMMA then
+    if current_lexeme().TokenType = TT_COMMA then
     begin
         consume(TT_COMMA);
         consume(TT_IDENT);
@@ -161,35 +161,34 @@ begin
     end;
 end;
 
-// <restDeclaration> -> <declaration><restDeclaration> | & ;
+{ <restDeclaration> -> <declaration><restDeclaration> | & ;}
 procedure TParser.proc_restDeclaration;
 begin
-    if current_lexeme.type = TT_IDENT then
+    if current_lexeme().TokenType = TT_IDENT then
     begin
         proc_declaration;
         proc_restDeclaration;
     end;
 end;
 
-// <type> -> 'integer' | 'real' | 'string' ;
+{ <type> -> 'integer' | 'real' | 'string' ;}
 procedure TParser.proc_type;
 begin
-    case current_lexeme.type of
+    case current_lexeme().TokenType of
         TT_TYPE_INT: consume(TT_TYPE_INT);
         TT_TYPE_REAL: consume(TT_TYPE_REAL);
         TT_TYPE_STR: consume(TT_TYPE_STR);
 
-    // TODO: jogar um erro namoral aqui
     else
         raise ESyntaticalError.Create('Expected integer, real or string: ' + current_lexeme.str);
     end;
 end;
 
-// ------------------------------------
-//  program statements
-// ------------------------------------
+{ ------------------------------------}
+{  program statements}
+{ ------------------------------------}
 
-// <block> -> 'begin' <stmtList> 'end' ';' ;
+{ <block> -> 'begin' <stmtList> 'end' ';' ;}
 procedure TParser.proc_block;
 begin
     consume(TT_BEGIN);
@@ -198,30 +197,33 @@ begin
     consume(TT_SEMICOLON);
 end;
 
-// <stmtList> -> <stmt> <stmtList> | & ;
+{ <stmtList> -> <stmt> <stmtList> | & ;}
 procedure TParser.proc_stmtList;
 begin
-    case current_lexeme.type of
+    case current_lexeme().TokenType of
             TT_FOR, TT_READ, TT_WRITE, TT_READLN, TT_WRITELN,
             TT_WHILE, TT_IDENT, TT_IF, TT_BEGIN, TT_BREAK, TT_CONTINUE, TT_SEMICOLON:
-    begin
-        proc_stmt;
-        proc_stmtList;
+        begin
+            proc_stmt;
+            proc_stmtList;
+        end;
     end;
 end;
 
-// <stmt> -> <forStmt>
-//    | <ioStmt>
-//    | <whileStmt>
-//    | <atrib> ';'
-//    | <ifStmt>
-//    | <block>
-//    | 'break'';'
-//    | 'continue'';'
-//    | ';' ;
+{stmt> -> <forStmt>
+    | <ioStmt>
+    | <whileStmt>
+    | <atrib> ';'
+    | <ifStmt>
+    | <block>
+    | 'break'';'
+    | 'continue'';'
+    | ';' ;
+}
+
 procedure TParser.proc_stmt;
 begin
-    case current_lexeme.type of
+    case current_lexeme().TokenType of
         TT_FOR: proc_forStmt;
 
         TT_READ, TT_WRITE, TT_READLN, TT_WRITELN: proc_ioStmt;
@@ -252,19 +254,18 @@ begin
 
         TT_SEMICOLON: consume(TT_SEMICOLON);
 
-        // TODO: jogar um erro namoral aqui
         else
             raise ESyntaticalError.Create('Undefined statment : ' + current_lexeme.str + 'expected flow control, ; ,break, continue or attribuition');
     end;
 end;
 
-// ---------------------------
-//  statement descriptions
-// ---------------------------
+{ ---------------------------}
+{  statement descriptions}
+{ ---------------------------}
 
-// for command
+{ for command}
 
-// <forStmt> -> 'for' <atrib> 'to' <endFor> 'do' <stmt> ;
+{ <forStmt> -> 'for' <atrib> 'to' <endFor> 'do' <stmt> ;}
 procedure TParser.proc_forStmt;
 begin
     consume(TT_FOR);
@@ -274,11 +275,10 @@ begin
     consume(TT_DO);
     proc_stmt;
 end;
-
-// <endFor> -> 'IDENT' | 'NUMint' ;
+{ <endFor> -> 'IDENT' | 'NUMint' ;}
 procedure TParser.proc_endFor;
 begin
-    case current_lexeme.type of
+    case current_lexeme().TokenType of
         TT_IDENT: consume(TT_IDENT);
         TT_LITERAL_OCT: consume(TT_LITERAL_OCT);
         TT_LITERAL_DEC: consume(TT_LITERAL_DEC);
@@ -290,14 +290,14 @@ begin
     end;
 end;
 
-// IO commands
-// <ioStmt> -> 'read' '(' 'IDENT' ')' ';'
-//           | 'write' '(' <outList> ')' ';' ;
-//           | 'readln' '(' 'IDENT' ')' ';'
-//           | 'writeln' '(' <outList> ')' ';' ;
+{ IO commands}
+{ <ioStmt> -> 'read' '(' 'IDENT' ')' ';'}
+{           | 'write' '(' <outList> ')' ';' ;}
+{           | 'readln' '(' 'IDENT' ')' ';'}
+{           | 'writeln' '(' <outList> ')' ';' ;}
 procedure TParser.proc_ioStmt;
 begin
-    case current_lexeme.type of
+    case current_lexeme.TokenType of
         TT_READ: 
         begin
             consume(TT_READ);
@@ -334,36 +334,36 @@ begin
             consume(TT_SEMICOLON);
         end;
     
-    // TODO: jogar um erro namoral aqui
     else
         raise ESyntaticalError.Create('Poorly formated Read or Write stament :' + current_lexeme.str);
+    end;
 end;
 
-// <outList> -> <out><restoOutList>;
+{ <outList> -> <out><restoOutList>;}
 procedure TParser.proc_outList;
 begin
     proc_out;
     proc_restoOutList;
 end;
 
-// <restoOutList> -> ',' <outList> | &;
+{ <restoOutList> -> ',' <outList> | &;}
 procedure TParser.proc_restoOutList;
 begin
-    if current_lexeme.type = TT_COMMA then
+    if current_lexeme().TokenType = TT_COMMA then
     begin
         consume(TT_COMMA);
 
-        case current_lexeme.type of
+        case current_lexeme().TokenType of
                 TT_LITERAL_STR, TT_IDENT, TT_LITERAL_OCT, TT_LITERAL_DEC, TT_LITERAL_HEX, TT_LITERAL_REAL:
             proc_outList;
         end;
     end;
 end;
 
-// <out> -> 'STR' | 'IDENT' | 'NUMint' | 'NUMfloat' ;
+{ <out> -> 'STR' | 'IDENT' | 'NUMint' | 'NUMfloat' ;}
 procedure TParser.proc_out;
 begin
-    case current_lexeme.type of
+    case current_lexeme().TokenType of
         TT_LITERAL_STR: consume(TT_LITERAL_STR);
         TT_IDENT: consume(TT_IDENT);
         TT_LITERAL_OCT: consume(TT_LITERAL_OCT);
@@ -371,14 +371,15 @@ begin
         TT_LITERAL_HEX: consume(TT_LITERAL_HEX);
         TT_LITERAL_REAL: consume(TT_LITERAL_REAL);
 
-    // TODO: jogar um erro namoral aqui
+{  // TODO: jogar um erro namoral aqui}
     else
         raise ESyntaticalError.Create('Invalid output information, expected string, variable or number: ' + current_lexeme.str);
+    end;
 end;
 
-// while command
+{ while command}
 
-// <whileStmt> -> 'while' <expr> 'do' <stmt> ;
+{ <whileStmt> -> 'while' <expr> 'do' <stmt> ;}
 procedure TParser.proc_whileStmt;
 begin
     consume(TT_WHILE);
@@ -387,9 +388,9 @@ begin
     proc_stmt;
 end;
 
-// if command
+{ if command}
 
-// <ifStmt> -> 'if' <expr> 'then' <stmt> <elsePart> ;
+{ <ifStmt> -> 'if' <expr> 'then' <stmt> <elsePart> ;}
 procedure TParser.proc_ifStmt;
 begin
     consume(TT_IF);
@@ -399,14 +400,14 @@ begin
     proc_elsePart;
 end;
 
-// <elsePart> -> 'else' <stmt> | & ;
+{ <elsePart> -> 'else' <stmt> | & ;}
 procedure TParser.proc_elsePart;
 begin
-    if current_lexeme.type = TT_ELSE then
+    if current_lexeme().TokenType = TT_ELSE then
     begin
         consume(TT_ELSE);
 
-        case current_lexeme.type of
+        case current_lexeme().TokenType of
                 TT_FOR, TT_WHILE, TT_IDENT, TT_IF, TT_BEGIN, TT_BREAK, TT_CONTINUE, TT_SEMICOLON:
             proc_stmt;
 
@@ -417,11 +418,11 @@ begin
     end;
 end;
 
-// ------------------------------
-//  expressions
-// ------------------------------
+{ ------------------------------}
+{  expressions}
+{ ------------------------------}
 
-// <atrib> -> 'IDENT' ':=' <expr> ;
+{ <atrib> -> 'IDENT' ':=' <expr> ;}
 procedure TParser.proc_atrib;
 begin
     consume(TT_IDENT);
@@ -429,23 +430,23 @@ begin
     proc_expr;
 end;
 
-// <expr> -> <or> ;
+{ <expr> -> <or> ;}
 procedure TParser.proc_expr;
 begin
     proc_or;
 end;
 
-// <or> -> <and> <restoOr> ;
+{ <or> -> <and> <restoOr> ;}
 procedure TParser.proc_or;
 begin
     proc_and;
     proc_restoOr;
 end;
 
-// <restoOr> -> 'or' <and> <restoOr> | & ;
+{ <restoOr> -> 'or' <and> <restoOr> | & ; }
 procedure TParser.proc_restoOr;
 begin
-    if current_lexeme.type = TT_OR then
+    if current_lexeme().TokenType = TT_OR then
     begin
         consume(TT_OR);
         proc_and;
@@ -453,17 +454,17 @@ begin
     end;
 end;
 
-// <and> -> <not> <restoAnd> ;
+{ <and> -> <not> <restoAnd> ; }
 procedure TParser.proc_and;
 begin
     proc_not;
     proc_restoAnd;
 end;
 
-// <restoAnd> -> 'and' <not> <restoAnd> | & ;
+{ <restoAnd> -> 'and' <not> <restoAnd> | & ; }
 procedure TParser.proc_restoAnd;
 begin
-    if current_lexeme.type = TT_AND then
+    if current_lexeme().TokenType = TT_AND then
     begin
         consume(TT_AND);
         proc_and;
@@ -471,32 +472,33 @@ begin
     end;
 end;
 
-// <not> -> 'not' <not> | <rel> ;
+{ <not> -> 'not' <not> | <rel> ; }
 procedure TParser.proc_not;
 begin
-    if current_lexeme.type = TT_NOT then
+    if current_lexeme().TokenType = TT_NOT then
     begin
         consume(TT_NOT);
         proc_not;
-    end;
+    end
 
     else
        proc_rel; 
 end;
 
-// <rel> -> <add> <restoRel> ;
+{ <rel> -> <add> <restoRel> ; }
 procedure TParser.proc_rel;
 begin
     proc_add;
     proc_restoRel;
 end;
 
-// <restoRel> -> '==' <add> | '<>' <add>
-//             | '<' <add> | '<=' <add>
-//             | '>' <add> | '>=' <add> | & ;
+{ <restoRel> -> '==' <add> | '<>' <add>
+             | '<' <add> | '<=' <add>
+             | '>' <add> | '>=' <add> | & ;
+}
 procedure TParser.proc_restoRel;
 begin
-    case current_lexeme.type of
+    case current_lexeme().TokenType of
         TT_EQL:
         begin
             consume(TT_EQL);
@@ -536,18 +538,19 @@ begin
 end;
 
 
-// <add> -> <mult> <restoAdd> ;
+{ <add> -> <mult> <restoAdd> ;}
 procedure TParser.proc_add;
 begin
     proc_mult;
     proc_restoAdd;
 end;
 
-// <restoAdd> -> '+' <mult> <restoAdd>
-//             | '-' <mult> <restoAdd> | & ;
+{ <restoAdd> -> '+' <mult> <restoAdd>
+             | '-' <mult> <restoAdd> | & ;
+}
 procedure TParser.proc_restoAdd;
 begin
-    case current_lexeme.type of
+    case current_lexeme().TokenType of
         TT_ADD:
         begin
             consume(TT_ADD);
@@ -564,20 +567,21 @@ begin
     end;
 end;
 
-// <mult> -> <uno> <restoMult> ;
+{ <mult> -> <uno> <restoMult> ;}
 procedure TParser.proc_mult;
 begin
     proc_uno;
     proc_restoMult;
 end;
 
-// <restoMult> -> '*' <uno> <restoMult>
-//             |  '/' <uno> <restoMult>
-//             |  'mod' <uno> <restoMult> | & ;
-//             |  'div' <uno> <restoMult> | & ;
+{ <restoMult> -> '*' <uno> <restoMult>
+             |  '/' <uno> <restoMult>
+             |  'mod' <uno> <restoMult> | & ;
+             |  'div' <uno> <restoMult> | & ;
+}
 procedure TParser.proc_restoMult;
 begin
-    case current_lexeme.type of
+    case current_lexeme().TokenType of
         TT_MUL:
         begin
             consume(TT_MUL);
@@ -608,10 +612,10 @@ begin
     end;
 end;
 
-// <uno> -> '+' <uno> | '-' <uno> | <fator> ;
+{ <uno> -> '+' <uno> | '-' <uno> | <fator> ;}
 procedure TParser.proc_uno;
 begin
-    case current_lexeme.type of
+    case current_lexeme().TokenType of
         TT_ADD:
         begin
             consume(TT_ADD);
@@ -628,11 +632,12 @@ begin
     end;
 end;
 
-// <fator> -> 'NUMint' | 'NUMfloat'
-//          | 'IDENT'  | '(' <expr> ')' | 'STR' ;
+{ <fator> -> 'NUMint' | 'NUMfloat'
+          | 'IDENT'  | '(' <expr> ')' | 'STR' ;
+}
 procedure TParser.proc_fator;
 begin
-    case current_lexeme.type of
+    case current_lexeme().TokenType of
         TT_LITERAL_OCT: consume(TT_LITERAL_OCT);
 
         TT_LITERAL_DEC: consume(TT_LITERAL_DEC);

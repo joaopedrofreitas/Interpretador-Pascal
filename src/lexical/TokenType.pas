@@ -7,6 +7,7 @@ type
     { Special }
     
     TT_INVALID  = -1,
+    TT_EOF = 0,
     TT_END_OF_FILE,
 
     { Arithmetic operators }
@@ -62,11 +63,11 @@ type
 
     { Others }
     TT_IDENT,
-    TT_LITERAL_OCTAL,
-    TT_LITERAL_DECIMAL,
+    TT_LITERAL_OCT,
+    TT_LITERAL_DEC,
     TT_LITERAL_HEX,
     TT_LITERAL_REAL,
-    TT_LITERAL_STRING
+    TT_LITERAL_STR
   );
 
 function tt2str(token: TokenT): string;
@@ -133,11 +134,11 @@ begin
 
     { Others }
     TT_IDENT:             tt2str := 'IDENT';
-    TT_LITERAL_OCTAL:     tt2str := 'LITERAL_OCTAL';
-    TT_LITERAL_DECIMAL:   tt2str := 'LITERAL_DECIMAL';
+    TT_LITERAL_OCT:     tt2str := 'LITERAL_OCTAL';
+    TT_LITERAL_DEC:   tt2str := 'LITERAL_DECIMAL';
     TT_LITERAL_HEX:       tt2str := 'LITERAL_HEX';
     TT_LITERAL_REAL:      tt2str := 'LITERAL_REAL';
-    TT_LITERAL_STRING:    tt2str := 'LITERAL_STRING';
+    TT_LITERAL_STR:    tt2str := 'LITERAL_STRING';
 
   else
     writeln('Error: Invalid token type');

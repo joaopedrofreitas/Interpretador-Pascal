@@ -16,6 +16,7 @@ type
     constructor Create;
     function str: string;
   end;
+  TLexemeArray = array of TLexeme;
 
 implementation
 

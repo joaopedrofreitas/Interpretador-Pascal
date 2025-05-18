@@ -5,6 +5,7 @@ FPC = fpc
 SRC_DIR = src
 LEX_DIR = $(SRC_DIR)/lexical
 UTIL_DIR = $(SRC_DIR)/util
+SYNTACTIC_DIR = $(SRC_DIR)/syntactic
 
 # Unidades necessárias
 UNITS = \
@@ -12,15 +13,15 @@ UNITS = \
 	$(LEX_DIR)/SymbolUnit.pas \
 	$(LEX_DIR)/LexemeUnit.pas \
 	$(UTIL_DIR)/MyFile.pas \
-	$(LEX_DIR)/lexer.pas
+	$(LEX_DIR)/lexer.pas \
+	$(SYNTACTIC_DIR)/Parser.pas
 
 # Arquivo principal e executável
 MAIN = $(SRC_DIR)/main.pas
 OUTPUT = main  # Nome do executável sem aspas
 
 # Flags de compilação
-FLAGS = -Mobjfpc -Fu$(LEX_DIR) -Fu$(UTIL_DIR)
-
+FLAGS = -Mobjfpc -Fu$(LEX_DIR) -Fu$(UTIL_DIR) -Fu$(SYNTACTIC_DIR)
 all: compile
 
 compile: $(UNITS)

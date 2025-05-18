@@ -13,6 +13,7 @@ var
   i: Integer;
   lex: TLexeme;
   L: TLexer;
+  P: TParser;
 
 begin
   if ParamCount <> 1 then
@@ -27,11 +28,11 @@ begin
       lexemes := L.ScanFile(ParamStr(1));
       P := TParser.Create(lexemes);
     
-      {for i := 0 to High(lexemes) do
+      for i := 0 to High(lexemes) do
       begin
         lex := lexemes[i];
         WriteLn(lex.str);
-      end;}
+      end;
       
       P.start();
       
