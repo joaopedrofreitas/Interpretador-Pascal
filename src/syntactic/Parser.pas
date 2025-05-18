@@ -99,10 +99,8 @@ begin
         Inc(m_pos)
 
     else
-        raise ESyntaticalError.Create('Syntactic error -> expected ' + tt2str(expected) +
-                            ', found ' + tt2str(current_lexeme().TokenType) +
-                            #10 + 'line: ' + IntToStr(current_lexeme.line) +
-                            #10 + 'column: ' + IntToStr(current_lexeme.column));
+        raise ESyntaticalError.Create('expected ' + tt2str(expected) +
+                            ', found ' + current_lexeme.str);
 end;
 
 { ------------------------------------}
@@ -180,7 +178,7 @@ begin
         TT_TYPE_STR: consume(TT_TYPE_STR);
 
     else
-        raise ESyntaticalError.Create('Expected integer, real or string: ' + current_lexeme.str);
+        raise ESyntaticalError.Create('expected integer, real or string: ' + current_lexeme.str);
     end;
 end;
 
@@ -255,7 +253,7 @@ begin
         TT_SEMICOLON: consume(TT_SEMICOLON);
 
         else
-            raise ESyntaticalError.Create('Undefined statment : ' + current_lexeme.str + 'expected flow control, ; ,break, continue or attribuition');
+            raise ESyntaticalError.Create('undefined statment : ' + current_lexeme.str + ' expected flow control, ; ,break, continue or attribuition');
     end;
 end;
 
@@ -286,7 +284,7 @@ begin
 
     // TODO: jogar um erro namoral aqui
     else
-        raise ESyntaticalError.Create('Expected variable or literal value, found: ' + current_lexeme.str);
+        raise ESyntaticalError.Create('expected variable or literal value, found: ' + current_lexeme.str);
     end;
 end;
 
@@ -335,7 +333,7 @@ begin
         end;
     
     else
-        raise ESyntaticalError.Create('Poorly formated Read or Write stament :' + current_lexeme.str);
+        raise ESyntaticalError.Create('poorly formated Read or Write stament : ' + current_lexeme.str);
     end;
 end;
 
@@ -373,7 +371,7 @@ begin
 
 {  // TODO: jogar um erro namoral aqui}
     else
-        raise ESyntaticalError.Create('Invalid output information, expected string, variable or number: ' + current_lexeme.str);
+        raise ESyntaticalError.Create('invalid output information, expected string, variable or number: ' + current_lexeme.str);
     end;
 end;
 
@@ -413,7 +411,7 @@ begin
 
         // TODO: jogar um erro namoral aqui
         else
-            raise ESyntaticalError.Create('Invalid else statment: ' + current_lexeme.str);
+            raise ESyntaticalError.Create('invalid else statment: ' + current_lexeme.str);
         end;
     end;
 end;
@@ -659,7 +657,7 @@ begin
 
     // TODO: jogar um erro namoral aqui
     else
-        raise ESyntaticalError.Create('Invalid fator: ' + current_lexeme.str);
+        raise ESyntaticalError.Create('invalid fator: ' + current_lexeme.str);
     end;
 end;
 

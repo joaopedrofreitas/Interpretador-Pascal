@@ -7,6 +7,7 @@ var
 begin
   a := 25 div 03;
   b := a / 0x02;
+  r := 0.2;
 
   if (a = b) then
     write ("that's\tit");
