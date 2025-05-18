@@ -254,7 +254,7 @@ begin
 
         // TODO: jogar um erro namoral aqui
         else
-            raise ESyntaticalError.Create('DEU PAU 3: ' + current_lexeme.str);
+            raise ESyntaticalError.Create('Undefined statment : ' + current_lexeme.str + 'expected flow control, ; ,break, continue or attribuition');
     end;
 end;
 
@@ -286,7 +286,7 @@ begin
 
     // TODO: jogar um erro namoral aqui
     else
-        raise ESyntaticalError.Create('DEU PAU 4: ' + current_lexeme.str);
+        raise ESyntaticalError.Create('Expected variable or literal value, found: ' + current_lexeme.str);
     end;
 end;
 
@@ -336,7 +336,7 @@ begin
     
     // TODO: jogar um erro namoral aqui
     else
-        raise ESyntaticalError.Create('DEU PAU: ' + current_lexeme.str);
+        raise ESyntaticalError.Create('Poorly formated Read or Write stament :' + current_lexeme.str);
 end;
 
 // <outList> -> <out><restoOutList>;
@@ -373,7 +373,7 @@ begin
 
     // TODO: jogar um erro namoral aqui
     else
-        raise ESyntaticalError.Create('DEU PAU: ' + current_lexeme.str);
+        raise ESyntaticalError.Create('Invalid output information, expected string, variable or number: ' + current_lexeme.str);
 end;
 
 // while command
@@ -412,7 +412,7 @@ begin
 
         // TODO: jogar um erro namoral aqui
         else
-            raise ESyntaticalError.Create('DEU PAU 5: ' + current_lexeme.str);
+            raise ESyntaticalError.Create('Invalid else statment: ' + current_lexeme.str);
         end;
     end;
 end;
@@ -652,7 +652,7 @@ begin
 
     // TODO: jogar um erro namoral aqui
     else
-        raise ESyntaticalError.Create('DEU PAU 6: ' + current_lexeme.str);
+        raise ESyntaticalError.Create('Invalid fator: ' + current_lexeme.str);
     end;
 end;
 

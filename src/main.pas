@@ -26,6 +26,13 @@ begin
     try
       lexemes := L.ScanFile(ParamStr(1));
       P := TParser.Create(lexemes);
+    
+      {for i := 0 to High(lexemes) do
+      begin
+        lex := lexemes[i];
+        WriteLn(lex.str);
+      end;}
+      
       P.start();
       
       WriteLn('As análises syntática e léxica não encontraram erro!');
