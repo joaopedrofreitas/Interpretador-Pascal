@@ -5,7 +5,8 @@ program Main;
 uses
   SysUtils,
   Lexer,
-  LexemeUnit;
+  LexemeUnit,
+  Parser;
 
 var
   lexemes: TLexemeArray;
@@ -21,20 +22,21 @@ begin
   end;
 
   try
-    L := TLexer.Create;
+    L := TLexer.Create();
     try
       lexemes := L.ScanFile(ParamStr(1));
-      for i := 0 to High(lexemes) do
-      begin
-        lex := lexemes[i];
-        WriteLn(lex.str);
-      end;
+      P := TParser.Create(lexemes);
+      P.start();
+      
+      WriteLn('As análises syntática e léxica não encontraram erro!');
     finally
       L.Free;
     end;
   except
     on E: ELexicalError do
       WriteLn('Error: ', E.Message);
+    on E: ESyntaticalError do
+          WriteLn('Error: ', E.Message);
     on E: Exception do
       WriteLn('Error: ', E.ClassName, ': ', E.Message);
   end;

@@ -8,6 +8,9 @@ uses
   TokenType;
 
 type
+
+    ESyntaticalError = class(Exception);
+
     TParser = class
     private
         m_lexemes: TArray<TLexeme>;
