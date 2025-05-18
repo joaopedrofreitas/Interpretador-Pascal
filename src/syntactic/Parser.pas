@@ -253,7 +253,7 @@ begin
         TT_SEMICOLON: consume(TT_SEMICOLON);
 
         else
-            raise ESyntaticalError.Create('undefined statment : ' + current_lexeme.str + ' expected flow control, ; ,break, continue or attribuition');
+            raise ESyntaticalError.Create('undefined statement : ' + current_lexeme.str + ' expected flow control, ; ,break, continue or attribuition');
     end;
 end;
 
