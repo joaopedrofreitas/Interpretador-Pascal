@@ -4,12 +4,12 @@ program Main;
 
 uses
   SysUtils,
-  Lexer,        // seu módulo de análise léxica
-  LexemeUnit,   // define TLexeme e TLexemeArray
-  Parser,       // define TParser
-  Printer,      // define TPrinter
-  ExceptionUnit, // define ELexicalError e ESyntaticalError
-  Interpreter;
+  Lexer,          // seu módulo de análise léxica
+  LexemeUnit,     // define TLexeme e TLexemeArray
+  Parser,         // define TParser
+  Printer,        // define TPrinter
+  ExceptionUnit,  // define ELexicalError e ESyntaticalError
+  Interpreter;    // define TInterpreter
 
 var
   lexemes: TLexemeArray;
@@ -17,6 +17,7 @@ var
   varTypes: TVariableInfoArray;
   L: TLexer;
   P: TParser;
+  interp: TInterpreter;
   inputFile: string;
 
 begin
@@ -41,7 +42,7 @@ begin
         Writeln('Parsing concluído sem erros sintáticos.');
         Writeln;
 
-        // 3) Obtenha os comandos gerados
+        // 3) Obtenha os comandos gerados e os tipos
         commands := P.GetCommands;
         varTypes := P.GetVariableTypes;
 
@@ -52,7 +53,7 @@ begin
         // 5) Exiba os comandos
         TPrinter.PrintCommands(commands);
 
-        var interp: TInterpreter;
+        // 6) Interprete
         interp := TInterpreter.Create(varTypes);
         try
           interp.Execute(commands);

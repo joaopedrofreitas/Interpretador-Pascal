@@ -53,8 +53,12 @@ implementation
 { TSource }
 constructor TSource.Create(const value: string);
 begin
-  sourceType := stString;
-  strValue := value;
+  if value = '' then
+    sourceType := stNone
+  else begin
+    sourceType := stString;
+    strValue := value;
+  end;
   intValue := 0;
   floatValue := 0.0;
   writeType := wtSTRING;

@@ -54,7 +54,6 @@ begin
     cmd := commands[i];
     Write(i, ': ');
     
-    // Impressão dos mnemonics
     case cmd.mnemonic of
       mnADD:    Write('ADD');
       mnSUB:    Write('SUB');
@@ -72,19 +71,12 @@ begin
       mnLSS:    Write('LSS');
       mnLEQ:    Write('LEQ');
       mnASSIGN: Write('ASSIGN');
-      mnIF:
-        begin
-        Write('IF ');
-        Write(FormatOperand(cmd.dst.strValue), ', ');
-        Write(FormatOperand(cmd.src1.strValue), ', ');
-        Write(FormatOperand(cmd.src2.strValue));
-      end;
+      mnIF:     Write('IF');
       mnJMP:    Write('JMP');
       mnCALL:   Write('CALL');
       mnLABEL:  Write('LABEL');
     end;
     
-    // Tratamento especial para CALL
     if cmd.mnemonic = mnCALL then
     begin
       Write(' ');
@@ -102,9 +94,13 @@ begin
       else
         Write('VARIABLE');
     end
+    else if cmd.mnemonic = mnLABEL then
+    begin
+      if cmd.dst.strValue <> '' then
+        Write(' ', cmd.dst.strValue);
+    end
     else
     begin
-      // Comandos normais
       Write(' ', FormatOperand(cmd.dst.strValue), ', ');
       Write(FormatOperand(cmd.src1.strValue), ', ');
       Write(FormatOperand(cmd.src2.strValue));

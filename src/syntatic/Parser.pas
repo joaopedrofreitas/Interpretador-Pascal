@@ -394,70 +394,36 @@ var
   startLbl, endLbl, bodyLbl: string;
   loopVar, endVal, temp, cond: string;
 begin
-  // consome 'for'
   consume(ttFOR);
-
-  // captura variável do laço e faz a atribuição inicial (via proc_atrib)
   loopVar := current_lexeme.token;
   proc_atrib;
 
-  // cria os labels
-  startLbl := generateLabel;      // rótulo de início
-  endLbl   := generateEndLabel;   // rótulo de término
-  bodyLbl  := generateLabel;      // rótulo do corpo
+  startLbl := generateLabel;
+  endLbl   := generateLabel;
+  bodyLbl  := generateLabel;
 
-  // marca o início do laço
   addCommand(mnLABEL, TTarget.Create(startLbl), TSource.Create(''), TSource.Create(''));
 
-  // consome 'to' e o valor final
   consume(ttTO);
   endVal := current_lexeme.token;
   proc_endFor;
 
-  // compara loopVar <= endVal e guarda em temp
   temp := generateTemp;
-  addCommand(
-    mnLEQ,
-    TTarget.Create(temp),
-    TSource.Create(loopVar),
-    TSource.Create(endVal)
-  );
-  // condicional
-  cond := temp;
-  addCommand(
-    mnIF,
-    TTarget.Create(bodyLbl),        // se true vai para bodyLbl
-    TSource.Create(cond),
-    TSource.Create(endLbl)          // se false vai para endLbl
-  );
+  addCommand(mnLEQ, TTarget.Create(temp), TSource.Create(loopVar), TSource.Create(endVal));
+  addCommand(mnIF, TTarget.Create(bodyLbl), TSource.Create(temp), TSource.Create(endLbl));
 
-  // corpo do laço
   addCommand(mnLABEL, TTarget.Create(bodyLbl), TSource.Create(''), TSource.Create(''));
   consume(ttDO);
   proc_stmt;
 
-  // incremento: j := j + 1
+  // Incremento da variável de controle
   temp := generateTemp;
-  addCommand(
-    mnADD,
-    TTarget.Create(temp),
-    TSource.Create(loopVar),
-    TSource.Create('1')
-  );
-  addCommand(
-    mnASSIGN,
-    TTarget.Create(loopVar),
-    TSource.Create(temp),
-    TSource.Create('')
-  );
+  addCommand(mnADD, TTarget.Create(temp), TSource.Create(loopVar), TSource.Create('1'));
+  addCommand(mnASSIGN, TTarget.Create(loopVar), TSource.Create(temp), TSource.Create(''));
 
-  // volta ao início
   addCommand(mnJMP, TTarget.Create(startLbl), TSource.Create(''), TSource.Create(''));
-
-  // fim do laço
   addCommand(mnLABEL, TTarget.Create(endLbl), TSource.Create(''), TSource.Create(''));
 end;
-
 
 
 // endFor -> IDENT | literal
@@ -607,36 +573,52 @@ begin
   addCommand(mnLABEL, TTarget.Create(endLbl), TSource.Create(''), TSource.Create(''));
 end;
 
+
+// ifStmt -> if expr then stmt elsePart
 procedure TParser.proc_ifStmt(const endLabel: string);
 var
-  condition, thenLbl, elseLbl, finalLbl: string;
+  cond, thenLbl, elseLbl, finalLbl: string;
 begin
   consume(ttIF);
+  // 1) Avalia a expressão e retira o resultado da pilha
+  proc_expr;
+  cond := popExpression;
+
+  // 2) Gera rótulos
   thenLbl := generateLabel;
   elseLbl := generateLabel;
-  
   if endLabel <> '' then
     finalLbl := endLabel
   else
     finalLbl := generateEndLabel;
 
-  proc_expr;
-  condition := popExpression;
+  // 3) Comando IF: dst = variável temporária com condição,
+  //    src1 = rótulo THEN, src2 = rótulo ELSE
+  addCommand(
+    mnIF,
+    TTarget.Create(cond),          // condição
+    TSource.Create(thenLbl),       // rótulo THEN
+    TSource.Create(elseLbl)        // rótulo ELSE
+  );
 
-  addCommand(mnIF, TTarget.Create(''), TSource.Create(condition), TSource.Create(''));
-  addCommand(mnJMP, TTarget.Create(elseLbl), TSource.Create(''), TSource.Create(''));
+  // 4) THEN branch
   addCommand(mnLABEL, TTarget.Create(thenLbl), TSource.Create(''), TSource.Create(''));
-
   consume(ttTHEN);
   proc_stmt;
-  
+  // após THEN, salta para o final
   addCommand(mnJMP, TTarget.Create(finalLbl), TSource.Create(''), TSource.Create(''));
+
+  // 5) ELSE branch
   addCommand(mnLABEL, TTarget.Create(elseLbl), TSource.Create(''), TSource.Create(''));
-  
   proc_elsePart(finalLbl);
 
-  addCommand(mnLABEL, TTarget.Create(finalLbl), TSource.Create(''), TSource.Create(''));
+  // 6) Rótulo de fim
+  if endLabel = '' then
+    addCommand(mnLABEL, TTarget.Create(finalLbl), TSource.Create(''), TSource.Create(''));
 end;
+
+
+
 
 procedure TParser.proc_elsePart(const endLabel: string);
 begin
