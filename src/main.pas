@@ -4,50 +4,77 @@ program Main;
 
 uses
   SysUtils,
-  Lexer,
-  LexemeUnit,
-  Parser;
+  Lexer,        // seu módulo de análise léxica
+  LexemeUnit,   // define TLexeme e TLexemeArray
+  Parser,       // define TParser
+  Printer,      // define TPrinter
+  ExceptionUnit, // define ELexicalError e ESyntaticalError
+  Interpreter;
 
 var
   lexemes: TLexemeArray;
-  i: INTEGER;
-  lex: TLexeme;
+  commands: TCommandArray;
+  varTypes: TVariableInfoArray;
   L: TLexer;
   P: TParser;
+  inputFile: string;
 
 begin
   if ParamCount <> 1 then
   begin
-    WriteLn('Usage: ', ExtractFileName(ParamStr(0)), ' <program>');
+    Writeln('Uso: ', ExtractFileName(ParamStr(0)), ' <arquivo_pascal>');
     Halt(1);
   end;
+  inputFile := ParamStr(1);
 
   try
-    L := TLexer.Create();
+    L := TLexer.Create;
     try
-      lexemes := L.ScanFile(ParamStr(1));
+      // 1) Análise léxica
+      lexemes := L.ScanFile(inputFile);
+      TPrinter.PrintLexemes(lexemes);
+
+      // 2) Parsing + geração de código intermediário
       P := TParser.Create(lexemes);
-    
-      for i := 0 to High(lexemes) do
-      begin
-        lex := lexemes[i];
-        WriteLn(lex.str);
+      try
+        P.Start;
+        Writeln('Parsing concluído sem erros sintáticos.');
+        Writeln;
+
+        // 3) Obtenha os comandos gerados
+        commands := P.GetCommands;
+        varTypes := P.GetVariableTypes;
+
+        // 4) Exiba os tipos de variáveis
+        TPrinter.PrintVariableInfoArray(varTypes);
+        Writeln;
+
+        // 5) Exiba os comandos
+        TPrinter.PrintCommands(commands);
+
+        var interp: TInterpreter;
+        interp := TInterpreter.Create(varTypes);
+        try
+          interp.Execute(commands);
+          interp.PrintState;
+        finally
+          interp.Free;
+        end;
+
+      finally
+        P.Free;
       end;
-      
-      P.start();
-      
-      WriteLn('As análises syntática e léxica não encontraram erro!');
     finally
       L.Free;
     end;
+
   except
     on E: ELexicalError do
-      WriteLn('Lexical Error: ', E.Message);
+      Writeln('Erro Léxico: ', E.Message);
     on E: ESyntaticalError do
-          WriteLn('Syntatic Error: ', E.Message);
+      Writeln('Erro Sintático: ', E.Message);
     on E: Exception do
-      WriteLn('Error: ', E.ClassName, ': ', E.Message);
+      Writeln('Erro: ', E.ClassName, ': ', E.Message);
   end;
 end.
-
 

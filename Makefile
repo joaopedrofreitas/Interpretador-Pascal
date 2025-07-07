@@ -5,32 +5,25 @@ FPC = fpc
 SRC_DIR = src
 LEX_DIR = $(SRC_DIR)/lexical
 UTIL_DIR = $(SRC_DIR)/util
-SYNTACTIC_DIR = $(SRC_DIR)/syntactic
-
-# Unidades necessárias
-UNITS = \
-	$(LEX_DIR)/TokenType.pas \
-	$(LEX_DIR)/SymbolUnit.pas \
-	$(LEX_DIR)/LexemeUnit.pas \
-	$(UTIL_DIR)/MyFile.pas \
-	$(LEX_DIR)/lexer.pas \
-	$(SYNTACTIC_DIR)/Parser.pas
+SYNTATIC_DIR = $(SRC_DIR)/syntatic
+INTERPRETER_DIR = $(SRC_DIR)/interpreter
 
 # Arquivo principal e executável
 MAIN = $(SRC_DIR)/main.pas
-OUTPUT = main  # Nome do executável sem aspas
+OUTPUT = pascal-compiler
 
 # Flags de compilação
-FLAGS = -Mobjfpc -Fu$(LEX_DIR) -Fu$(UTIL_DIR) -Fu$(SYNTACTIC_DIR)
+FLAGS = -Mobjfpc -Fu$(LEX_DIR) -Fu$(UTIL_DIR) -Fu$(SYNTATIC_DIR) -Fu$(INTERPRETER_DIR) -S2 -g -O-
+
 all: compile
 
-compile: $(UNITS)
+compile:
 	$(FPC) $(FLAGS) $(MAIN) -o$(OUTPUT)
 
 clean:
-	rm -f $(SRC_DIR)/$(OUTPUT)
+	rm -f $(OUTPUT)
 	find $(SRC_DIR) -name '*.ppu' -delete
 	find $(SRC_DIR) -name '*.o' -delete
+	find $(SRC_DIR) -name '*.rsj' -delete
 
 .PHONY: all compile clean
-

@@ -5,29 +5,29 @@ unit MyFile;
 interface
 
 uses
-  SysUtils, Classes;
+  Classes, SysUtils;
 
 type
   TFile = class
   private
-    FStart: PAnsiChar;
-    FCurrent: PAnsiChar;
+    FStart: PChar;
+    FCurrent: PChar;
     FLine: Integer;
     FColumn: Integer;
     function GetIsOpen: Boolean;
     function GetIsAtEOF: Boolean;
-    class function LoadText(const FileName: string): PAnsiChar; static;
+    class function GetText(const filename: string): PChar; static;
   public
-    constructor Create; overload;
-    constructor Create(const FileName: string); overload;
+    constructor Create;
+    constructor Create(const filename: string);
     destructor Destroy; override;
-    procedure Open(const FileName: string);
+    procedure Open(const filename: string);
     procedure Close;
     procedure Rewind;
-    function Advance: AnsiChar;
-    function Peek: AnsiChar;
-    function PeekNext: AnsiChar;
-    function PeekPrev: AnsiChar;
+    function Advance: Char;
+    function Peek: Char;
+    function PeekNext: Char;
+    function PeekPrev: Char;
     property IsOpen: Boolean read GetIsOpen;
     property IsAtEOF: Boolean read GetIsAtEOF;
     property Line: Integer read FLine;
@@ -38,17 +38,16 @@ implementation
 
 constructor TFile.Create;
 begin
-  inherited Create;
   FStart := nil;
   FCurrent := nil;
   FLine := 0;
   FColumn := 0;
 end;
 
-constructor TFile.Create(const FileName: string);
+constructor TFile.Create(const filename: string);
 begin
   Create;
-  Open(FileName);
+  Open(filename);
 end;
 
 destructor TFile.Destroy;
@@ -57,19 +56,23 @@ begin
   inherited Destroy;
 end;
 
-class function TFile.LoadText(const FileName: string): PAnsiChar;
+class function TFile.GetText(const filename: string): PChar;
 var
-  FS: TFileStream;
-  Size: Int64;
+  stream: TFileStream;
+  size: Int64;
 begin
-  FS := TFileStream.Create(FileName, fmOpenRead or fmShareDenyNone);
   try
-    Size := FS.Size;
-    GetMem(Result, Size + 1);
-    FS.ReadBuffer(Result^, Size);
-    Result[Size] := #0;
-  finally
-    FS.Free;
+    stream := TFileStream.Create(filename, fmOpenRead);
+    try
+      size := stream.Size;
+      GetMem(Result, size + 1);
+      stream.Read(Result^, size);
+      Result[size] := #0;
+    finally
+      stream.Free;
+    end;
+  except
+    raise Exception.Create('Couldn''t open file ' + filename);
   end;
 end;
 
@@ -83,11 +86,10 @@ begin
   Result := (FCurrent <> nil) and (FCurrent^ = #0);
 end;
 
-procedure TFile.Open(const FileName: string);
+procedure TFile.Open(const filename: string);
 begin
-  if GetIsOpen then
-    Close;
-  FStart := LoadText(FileName);
+  Close;
+  FStart := GetText(filename);
   FCurrent := FStart;
   FLine := 1;
   FColumn := 1;
@@ -95,7 +97,7 @@ end;
 
 procedure TFile.Close;
 begin
-  if GetIsOpen then
+  if IsOpen then
   begin
     FreeMem(FStart);
     FStart := nil;
@@ -107,7 +109,7 @@ end;
 
 procedure TFile.Rewind;
 begin
-  if GetIsOpen then
+  if IsOpen then
   begin
     FCurrent := FStart;
     FLine := 1;
@@ -115,12 +117,14 @@ begin
   end;
 end;
 
-function TFile.Advance: AnsiChar;
+function TFile.Advance: Char;
 begin
-  if not GetIsOpen or GetIsAtEOF then
+  if not IsOpen or IsAtEOF then
     Exit(#0);
-  Inc(FCurrent);
+
   Result := FCurrent^;
+  Inc(FCurrent);
+
   if PeekPrev = #10 then
   begin
     Inc(FLine);
@@ -130,26 +134,25 @@ begin
     Inc(FColumn);
 end;
 
-function TFile.Peek: AnsiChar;
+function TFile.Peek: Char;
 begin
-  if not GetIsOpen then
+  if not IsOpen then
     Exit(#0);
   Result := FCurrent^;
 end;
 
-function TFile.PeekNext: AnsiChar;
+function TFile.PeekNext: Char;
 begin
-  if not GetIsOpen or (FCurrent^ = #0) then
+  if not IsOpen or IsAtEOF then
     Exit(#0);
   Result := (FCurrent + 1)^;
 end;
 
-function TFile.PeekPrev: AnsiChar;
+function TFile.PeekPrev: Char;
 begin
-  if not GetIsOpen or (FCurrent = FStart) then
+  if not IsOpen or (FCurrent = FStart) then
     Exit(#0);
   Result := (FCurrent - 1)^;
 end;
 
 end.
-
